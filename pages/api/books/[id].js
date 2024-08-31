@@ -2,7 +2,6 @@ import { readFile, writeFile } from 'fs/promises';
 import path from 'path';
 
 export default async function handler(req, res) {
-  // Add these headers at the beginning of the handler
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
@@ -21,13 +20,12 @@ export default async function handler(req, res) {
       if (id) {
         const book = books.find(b => b.id.toString() === id);
         if (book) {
-          res.status(200).json(book);
+          res.status(200).json({ ...book, timestamp: Date.now() });
         } else {
-          res.status(404).json({ message: 'Book not found' });
+          res.status(404).json({ message: 'Book not found', timestamp: Date.now() });
         }
       } else {
-        // Add a timestamp to the response to ensure it's always different
-        res.status(200).json({ books, timestamp: new Date().getTime() });
+        res.status(200).json({ books, timestamp: Date.now() });
       }
     } else if (req.method === 'POST') {
       const newBook = {
@@ -40,15 +38,15 @@ export default async function handler(req, res) {
       };
       books.push(newBook);
       await writeFile(dataFilePath, JSON.stringify(books, null, 2));
-      res.status(201).json(newBook);
+      res.status(201).json({ ...newBook, timestamp: Date.now() });
     } else if (req.method === 'PUT') {
       const index = books.findIndex(b => b.id.toString() === id);
       if (index !== -1) {
         books[index] = { ...books[index], ...req.body, id: books[index].id };
         await writeFile(dataFilePath, JSON.stringify(books, null, 2));
-        res.status(200).json(books[index]);
+        res.status(200).json({ ...books[index], timestamp: Date.now() });
       } else {
-        res.status(404).json({ message: 'Book not found' });
+        res.status(404).json({ message: 'Book not found', timestamp: Date.now() });
       }
     } else if (req.method === 'DELETE') {
       console.log('Attempting to delete book with ID:', id);
@@ -59,10 +57,10 @@ export default async function handler(req, res) {
         console.log('Book found and removed, updating JSON file');
         await writeFile(dataFilePath, JSON.stringify(books, null, 2));
         console.log('JSON file updated successfully');
-        res.status(200).json({ message: 'Book deleted successfully' });
+        res.status(200).json({ message: 'Book deleted successfully', timestamp: Date.now() });
       } else {
         console.log('Book not found for deletion');
-        res.status(404).json({ message: 'Book not found' });
+        res.status(404).json({ message: 'Book not found', timestamp: Date.now() });
       }
     } else {
       res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
@@ -70,6 +68,6 @@ export default async function handler(req, res) {
     }
   } catch (error) {
     console.error('Error in book API route:', error);
-    res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    res.status(500).json({ message: 'Internal Server Error', error: error.message, timestamp: Date.now() });
   }
 }
