@@ -20,9 +20,9 @@ export default function Home() {
                 className="bg-white overflow-hidden shadow-lg rounded-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col items-center justify-center p-6 text-center"
               >
                 <div className="text-4xl mb-4">
-                  {section === 'Books' && '📚'}
-                  {section === 'Authors' && '✍️'}
-                  {section === 'Genres' && '🏷️'}
+                  {section === 'Books'}
+                  {section === 'Authors'}
+                  {section === 'Genres'}
                 </div>
                 <h2 className="text-2xl font-semibold text-gray-900 mb-2">{section}</h2>
                 <p className="text-gray-600">Manage your {section.toLowerCase()}</p>
