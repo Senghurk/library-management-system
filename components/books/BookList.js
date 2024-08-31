@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 
 const BookList = () => {
   const [books, setBooks] = useState([]);
+  const [deletePrompt, setDeletePrompt] = useState({ show: false, bookId: null, bookTitle: '' });
   const router = useRouter();
 
   useEffect(() => {
@@ -16,18 +17,25 @@ const BookList = () => {
     setBooks(data);
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this book?')) {
-      try {
-        const response = await fetch(`/api/books/${id}`, { method: 'DELETE' });
-        if (response.ok) {
-          setBooks(books.filter(book => book.id !== id));
-        } else {
-          console.error('Failed to delete the book');
-        }
-      } catch (error) {
-        console.error('Error deleting the book:', error);
+  const showDeletePrompt = (id, title) => {
+    setDeletePrompt({ show: true, bookId: id, bookTitle: title });
+  };
+
+  const hideDeletePrompt = () => {
+    setDeletePrompt({ show: false, bookId: null, bookTitle: '' });
+  };
+
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`/api/books/${deletePrompt.bookId}`, { method: 'DELETE' });
+      if (response.ok) {
+        setBooks(books.filter(book => book.id !== deletePrompt.bookId));
+        hideDeletePrompt();
+      } else {
+        console.error('Failed to delete the book');
       }
+    } catch (error) {
+      console.error('Error deleting the book:', error);
     }
   };
 
@@ -45,14 +53,11 @@ const BookList = () => {
               <Link href={`/books/${book.id}`} className="bg-blue-500 text-white px-2 py-1 rounded mr-2 hover:bg-blue-600">
                 View
               </Link>
-              <button
-                onClick={() => router.push(`/books/${book.id}/edit`)}
-                className="bg-green-500 text-white px-2 py-1 rounded mr-2 hover:bg-green-600"
-              >
+              <Link href={`/books/${book.id}/edit`} className="bg-green-500 text-white px-2 py-1 rounded mr-2 hover:bg-green-600">
                 Update
-              </button>
+              </Link>
               <button
-                onClick={() => handleDelete(book.id)}
+                onClick={() => showDeletePrompt(book.id, book.title)}
                 className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
               >
                 Delete
@@ -61,6 +66,37 @@ const BookList = () => {
           </li>
         ))}
       </ul>
+
+      {deletePrompt.show && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="my-modal">
+          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div className="mt-3 text-center">
+              <h3 className="text-lg leading-6 font-medium text-gray-900">Delete Confirmation</h3>
+              <div className="mt-2 px-7 py-3">
+                <p className="text-sm text-gray-500">
+                  Are you sure you want to delete the book "{deletePrompt.bookTitle}"?
+                </p>
+              </div>
+              <div className="items-center px-4 py-3">
+                <button
+                  id="ok-btn"
+                  className="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-24 mr-2 hover:bg-red-600"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </button>
+                <button
+                  id="cancel-btn"
+                  className="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-24 hover:bg-gray-600"
+                  onClick={hideDeletePrompt}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
