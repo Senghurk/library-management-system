@@ -2,8 +2,11 @@ import { readFile, writeFile } from 'fs/promises';
 import path from 'path';
 
 export default async function handler(req, res) {
-  // Add this line at the beginning of the handler
-  res.setHeader('Cache-Control', 'no-store, max-age=0');
+  // Add these headers at the beginning of the handler
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Surrogate-Control', 'no-store');
 
   const { id } = req.query;
   const dataFilePath = path.join(process.cwd(), 'data', 'books.json');
@@ -23,7 +26,8 @@ export default async function handler(req, res) {
           res.status(404).json({ message: 'Book not found' });
         }
       } else {
-        res.status(200).json(books);
+        // Add a timestamp to the response to ensure it's always different
+        res.status(200).json({ books, timestamp: new Date().getTime() });
       }
     } else if (req.method === 'POST') {
       const newBook = {
