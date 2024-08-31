@@ -19,21 +19,27 @@ export default async function handler(req, res) {
     } else if (req.method === 'PUT') {
       const index = books.findIndex(b => b.id === id);
       if (index !== -1) {
-        books[index] = { ...books[index], ...req.body };
+        books[index] = { ...books[index], ...req.body, id };
         await writeFile(dataFilePath, JSON.stringify(books, null, 2));
         res.status(200).json(books[index]);
       } else {
         res.status(404).json({ message: 'Book not found' });
       }
     } else if (req.method === 'DELETE') {
+      const initialLength = books.length;
       books = books.filter(b => b.id !== id);
-      await writeFile(dataFilePath, JSON.stringify(books, null, 2));
-      res.status(200).json({ message: 'Book deleted successfully' });
+      if (books.length < initialLength) {
+        await writeFile(dataFilePath, JSON.stringify(books, null, 2));
+        res.status(200).json({ message: 'Book deleted successfully' });
+      } else {
+        res.status(404).json({ message: 'Book not found' });
+      }
     } else {
       res.setHeader('Allow', ['GET', 'PUT', 'DELETE']);
       res.status(405).end(`Method ${req.method} Not Allowed`);
     }
   } catch (error) {
+    console.error('Error in book API route:', error);
     res.status(500).json({ message: 'Internal Server Error', error: error.message });
   }
 }
