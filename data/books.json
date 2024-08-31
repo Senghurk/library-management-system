@@ -1,19 +1,15 @@
 [
   {
-    "id": "3",
-    "title": "The Great Gatsby",
-    "authorId": "3",
-    "genreId": "1",
-    "publishedDate": "1925-04-10",
-    "summary": "A critique of the American Dream through the story of Jay Gatsby."
-  },
-  {
     "id": "4",
     "title": "Moby Dick",
     "authorId": "4",
     "genreId": "3",
     "publishedDate": "1851-10-18",
-    "summary": "The narrative of Captain Ahab's obsessive quest to kill the giant white whale, Moby Dick."
+    "summary": "The narrative of Captain Ahab's obsessive quest to kill the giant white whale, Moby Dick.",
+    "timestamp": 1725113235557,
+    "author": "test",
+    "genre": "test",
+    "publishedYear": "1122"
   },
   {
     "id": "5",
@@ -54,13 +50,5 @@
     "genreId": "4",
     "publishedDate": "1869-03-01",
     "summary": "A historical novel that chronicles the French invasion of Russia and its impact on Russian society."
-  },
-  {
-    "title": "test",
-    "author": "test",
-    "genre": "test",
-    "publishedYear": "1122",
-    "summary": "test",
-    "id": 10
   }
 ]

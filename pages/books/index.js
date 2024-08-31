@@ -1,8 +1,13 @@
+import Layout from '@/components/Layout';
 import BookList from '@/components/books/BookList';
-import { getAllBooks } from '@/lib/db'; // Make sure this function exists in your db.js file
+import { getAllBooks } from '@/lib/db';
 
 export default function BooksPage({ initialBooks }) {
-  return <BookList initialBooks={initialBooks} />;
+  return (
+    <Layout>
+      <BookList initialBooks={initialBooks} />
+    </Layout>
+  );
 }
 
 export async function getServerSideProps() {

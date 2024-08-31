@@ -1,20 +1,19 @@
-import { getData, addData } from '../../../lib/db';
+import { getAllAuthors, addAuthor } from '@/lib/db';
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
-      const authors = await getData('authors');
+      const authors = await getAllAuthors();
       res.status(200).json(authors);
     } catch (error) {
-      res.status(500).json({ message: 'Error fetching authors', error: error.message });
+      res.status(500).json({ message: 'Failed to fetch authors' });
     }
   } else if (req.method === 'POST') {
     try {
-      const newAuthor = req.body;
-      const addedAuthor = await addData('authors', newAuthor);
-      res.status(201).json(addedAuthor);
+      const newAuthor = await addAuthor(req.body);
+      res.status(201).json(newAuthor);
     } catch (error) {
-      res.status(500).json({ message: 'Error adding author', error: error.message });
+      res.status(400).json({ message: error.message });
     }
   } else {
     res.setHeader('Allow', ['GET', 'POST']);

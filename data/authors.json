@@ -1,73 +1,65 @@
 [
-    {
-      "id": "1",
-      "name": "Harper Lee",
-      "biography": "An American novelist best known for 'To Kill a Mockingbird'.",
-      "birthDate": "1926-04-28",
-      "nationality": "American"
-    },
-    {
-      "id": "2",
-      "name": "George Orwell",
-      "biography": "An English novelist and essayist, journalist, and critic, known for '1984' and 'Animal Farm'.",
-      "birthDate": "1903-06-25",
-      "nationality": "British"
-    },
-    {
-      "id": "3",
-      "name": "F. Scott Fitzgerald",
-      "biography": "An American novelist and short story writer, famous for 'The Great Gatsby'.",
-      "birthDate": "1896-09-24",
-      "nationality": "American"
-    },
-    {
-      "id": "4",
-      "name": "Herman Melville",
-      "biography": "An American novelist and poet, best known for 'Moby Dick'.",
-      "birthDate": "1819-08-01",
-      "nationality": "American"
-    },
-    {
-      "id": "5",
-      "name": "Jane Austen",
-      "biography": "An English novelist known for her six major novels including 'Pride and Prejudice'.",
-      "birthDate": "1775-12-16",
-      "nationality": "British"
-    },
-    {
-      "id": "6",
-      "name": "J.D. Salinger",
-      "biography": "An American writer known for 'The Catcher in the Rye'.",
-      "birthDate": "1919-01-01",
-      "nationality": "American"
-    },
-    {
-      "id": "7",
-      "name": "Charlotte Brontë",
-      "biography": "An English novelist and poet, known for 'Jane Eyre'.",
-      "birthDate": "1816-04-21",
-      "nationality": "British"
-    },
-    {
-      "id": "8",
-      "name": "Leo Tolstoy",
-      "biography": "A Russian writer, best known for 'War and Peace' and 'Anna Karenina'.",
-      "birthDate": "1828-09-09",
-      "nationality": "Russian"
-    },
-    {
-      "id": "9",
-      "name": "J.R.R. Tolkien",
-      "biography": "An English writer and professor, known for 'The Hobbit' and 'The Lord of the Rings'.",
-      "birthDate": "1892-01-03",
-      "nationality": "British"
-    },
-    {
-      "id": "10",
-      "name": "Mark Twain",
-      "biography": "An American writer and humorist, known for 'Adventures of Huckleberry Finn' and 'The Adventures of Tom Sawyer'.",
-      "birthDate": "1835-11-30",
-      "nationality": "American"
-    }
-  ]
-  
+  {
+    "id": "1",
+    "name": "Harper Lee",
+    "biography": "An American novelist best known for 'To Kill a Mockingbird'.",
+    "birthDate": "1926-04-28",
+    "nationality": "American"
+  },
+  {
+    "id": "2",
+    "name": "George Orwell",
+    "biography": "An English novelist and essayist, journalist, and critic, known for '1984' and 'Animal Farm'.",
+    "birthDate": "1903-06-25",
+    "nationality": "British"
+  },
+  {
+    "id": "3",
+    "name": "F. Scott Fitzgerald",
+    "biography": "An American novelist and short story writer, famous for 'The Great Gatsby'.",
+    "birthDate": "1896-09-24",
+    "nationality": "American"
+  },
+  {
+    "id": "4",
+    "name": "Herman Melville",
+    "biography": "An American novelist and poet, best known for 'Moby Dick'.",
+    "birthDate": "1819-08-01",
+    "nationality": "American"
+  },
+  {
+    "id": "5",
+    "name": "Jane Austen",
+    "biography": "An English novelist known for her six major novels including 'Pride and Prejudice'.",
+    "birthDate": "1775-12-16",
+    "nationality": "British"
+  },
+  {
+    "id": "6",
+    "name": "J.D. Salinger",
+    "biography": "An American writer known for 'The Catcher in the Rye'.",
+    "birthDate": "1919-01-01",
+    "nationality": "American"
+  },
+  {
+    "id": "7",
+    "name": "Charlotte Brontë",
+    "biography": "An English novelist and poet, known for 'Jane Eyre'.",
+    "birthDate": "1816-04-21",
+    "nationality": "British"
+  },
+  {
+    "id": "8",
+    "name": "Leo Tolstoy",
+    "biography": "A Russian writer, best known for 'War and Peace' and 'Anna Karenina'.",
+    "birthDate": "1828-09-09",
+    "nationality": "Russian"
+  },
+  {
+    "id": "9",
+    "name": "J.R.R. Tolkien",
+    "biography": "An English writer and professor, known for 'The Hobbit' and 'The Lord of the Rings'.",
+    "birthDate": "1892-01-03",
+    "nationality": "British"
+  }
+]

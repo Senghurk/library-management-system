@@ -1,3 +1,4 @@
+import '@/styles/globals.css'
 import { NotificationProvider } from '@/contexts/NotificationContext';
 
 function MyApp({ Component, pageProps }) {
@@ -5,7 +6,7 @@ function MyApp({ Component, pageProps }) {
     <NotificationProvider>
       <Component {...pageProps} />
     </NotificationProvider>
-  );
+  )
 }
 
-export default MyApp;
+export default MyApp
