@@ -1,16 +1,5 @@
 [
   {
-    "id": "2",
-    "title": "1984",
-    "authorId": "2",
-    "genreId": "2",
-    "publishedDate": "1949-06-08",
-    "summary": "A dystopian novel set in a totalitarian society under constant surveillance.",
-    "author": "test2",
-    "genre": "test2",
-    "publishedYear": "1234"
-  },
-  {
     "id": "3",
     "title": "The Great Gatsby",
     "authorId": "3",
@@ -65,37 +54,5 @@
     "genreId": "4",
     "publishedDate": "1869-03-01",
     "summary": "A historical novel that chronicles the French invasion of Russia and its impact on Russian society."
-  },
-  {
-    "title": "test",
-    "author": "test",
-    "genre": "test",
-    "publishedYear": "1111",
-    "summary": "test",
-    "id": 11
-  },
-  {
-    "title": "test",
-    "author": "test",
-    "genre": "test",
-    "publishedYear": "2028",
-    "summary": "test\n",
-    "id": 12
-  },
-  {
-    "title": "test",
-    "author": "test",
-    "genre": "test",
-    "publishedYear": "1111",
-    "summary": "test",
-    "id": 13
-  },
-  {
-    "title": "test",
-    "author": "test",
-    "genre": "test",
-    "publishedYear": "1233",
-    "summary": "test",
-    "id": 14
   }
 ]

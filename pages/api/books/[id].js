@@ -2,6 +2,9 @@ import { readFile, writeFile } from 'fs/promises';
 import path from 'path';
 
 export default async function handler(req, res) {
+  // Add this line at the beginning of the handler
+  res.setHeader('Cache-Control', 'no-store, max-age=0');
+
   const { id } = req.query;
   const dataFilePath = path.join(process.cwd(), 'data', 'books.json');
 
