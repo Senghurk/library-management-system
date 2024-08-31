@@ -1,10 +1,11 @@
 import fs from 'fs/promises';
 import path from 'path';
 
-const authorsPath = path.join(process.cwd(), 'data', 'authors.json');
-
 export default async function handler(req, res) {
   const { id } = req.query;
+  
+  // Use dynamic path based on environment
+  const authorsPath = path.join(process.cwd(), 'data', 'authors.json');
 
   try {
     const data = await fs.readFile(authorsPath, 'utf8');
