@@ -1,32 +1,38 @@
-import fs from 'fs/promises';
-import path from 'path';
-
-const authorsPath = path.join(process.cwd(), 'data', 'authors.json');
+// pages/api/authors/index.js
+import { readData, writeData } from '@/lib/db';
 
 export default async function handler(req, res) {
-  if (req.method === 'GET') {
-    try {
-      const data = await fs.readFile(authorsPath, 'utf8');
-      const authors = JSON.parse(data);
-      res.status(200).json(authors);
-    } catch (error) {
-      console.error('Error reading authors data:', error.message);
-      res.status(500).json({ message: 'Server error', error: error.message });
-    }
-  } else if (req.method === 'POST') {
-    try {
-      const data = await fs.readFile(authorsPath, 'utf8');
-      let authors = JSON.parse(data);
-      const newAuthor = { ...req.body, id: Date.now().toString() };
-      authors.push(newAuthor);
-      await fs.writeFile(authorsPath, JSON.stringify(authors, null, 2));
-      res.status(201).json(newAuthor);
-    } catch (error) {
-      console.error('Error adding new author:', error.message);
-      res.status(500).json({ message: 'Server error', error: error.message });
-    }
-  } else {
-    res.setHeader('Allow', ['GET', 'POST']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+  const { method } = req;
+
+  switch (method) {
+    case 'GET':
+      try {
+        const authors = await readData('authors');
+        res.status(200).json(authors);
+      } catch (error) {
+        console.error('Error fetching authors:', error);
+        res.status(500).json({ error: 'Failed to fetch authors' });
+      }
+      break;
+
+    case 'POST':
+      try {
+        const authors = await readData('authors');
+        const newAuthor = {
+          id: Date.now().toString(),
+          ...req.body
+        };
+        authors.push(newAuthor);
+        await writeData('authors', authors);
+        res.status(201).json(newAuthor);
+      } catch (error) {
+        console.error('Error creating author:', error);
+        res.status(500).json({ error: 'Failed to create author' });
+      }
+      break;
+
+    default:
+      res.setHeader('Allow', ['GET', 'POST']);
+      res.status(405).end(`Method ${method} Not Allowed`);
   }
 }

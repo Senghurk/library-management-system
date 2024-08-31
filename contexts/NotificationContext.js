@@ -1,31 +1,23 @@
-import React, { createContext, useState, useContext } from 'react';
-import Notification from '../components/Notification';
+// contexts/NotificationContext.js
+import React, { createContext, useContext, useState } from 'react';
 
 const NotificationContext = createContext();
 
-export const NotificationProvider = ({ children }) => {
+export function NotificationProvider({ children }) {
   const [notification, setNotification] = useState(null);
 
-  const showNotification = (message, type = 'success') => {
+  const showNotification = (message, type) => {
     setNotification({ message, type });
-  };
-
-  const hideNotification = () => {
-    setNotification(null);
+    setTimeout(() => setNotification(null), 3000);
   };
 
   return (
-    <NotificationContext.Provider value={{ showNotification }}>
+    <NotificationContext.Provider value={{ notification, showNotification }}>
       {children}
-      {notification && (
-        <Notification
-          message={notification.message}
-          type={notification.type}
-          onClose={hideNotification}
-        />
-      )}
     </NotificationContext.Provider>
   );
-};
+}
 
-export const useNotification = () => useContext(NotificationContext);
+export function useNotification() {
+  return useContext(NotificationContext);
+}

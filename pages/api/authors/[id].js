@@ -1,38 +1,60 @@
-import fs from 'fs/promises';
-import path from 'path';
-
-const authorsPath = path.join(process.cwd(), 'data', 'authors.json');
+// pages/api/authors/[id].js
+import { readData, writeData } from '@/lib/db';
 
 export default async function handler(req, res) {
-  const { id } = req.query;
+  const {
+    query: { id },
+    method,
+  } = req;
 
-  try {
-    const data = await fs.readFile(authorsPath, 'utf8');
-    let authors = JSON.parse(data);
-
-    if (req.method === 'PUT') {
-      const index = authors.findIndex(a => a.id === id);
-      if (index !== -1) {
-        // Log the incoming request body
-        console.log('Request body:', req.body);
-
-        // Ensure the request body contains the necessary fields
-        if (!req.body.name || !req.body.nationality || !req.body.birthDate) {
-          return res.status(400).json({ message: 'Missing required fields' });
+  switch (method) {
+    case 'GET':
+      try {
+        const authors = await readData('authors');
+        const author = authors.find(a => a.id === id);
+        if (author) {
+          res.status(200).json(author);
+        } else {
+          res.status(404).json({ error: 'Author not found' });
         }
-
-        authors[index] = { ...authors[index], ...req.body, id };
-        await fs.writeFile(authorsPath, JSON.stringify(authors, null, 2));
-        res.status(200).json(authors[index]);
-      } else {
-        res.status(404).json({ message: 'Author not found' });
+      } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch author' });
       }
-    } else {
+      break;
+
+    case 'PUT':
+      try {
+        const authors = await readData('authors');
+        const index = authors.findIndex(a => a.id === id);
+        if (index !== -1) {
+          authors[index] = { ...authors[index], ...req.body };
+          await writeData('authors', authors);
+          res.status(200).json(authors[index]);
+        } else {
+          res.status(404).json({ error: 'Author not found' });
+        }
+      } catch (error) {
+        res.status(500).json({ error: 'Failed to update author' });
+      }
+      break;
+
+    case 'DELETE':
+      try {
+        const authors = await readData('authors');
+        const filteredAuthors = authors.filter(a => a.id !== id);
+        if (authors.length !== filteredAuthors.length) {
+          await writeData('authors', filteredAuthors);
+          res.status(200).json({ message: 'Author deleted successfully' });
+        } else {
+          res.status(404).json({ error: 'Author not found' });
+        }
+      } catch (error) {
+        res.status(500).json({ error: 'Failed to delete author' });
+      }
+      break;
+
+    default:
       res.setHeader('Allow', ['GET', 'PUT', 'DELETE']);
-      res.status(405).end(`Method ${req.method} Not Allowed`);
-    }
-  } catch (error) {
-    console.error('Server error:', error.message);  // Log the error message
-    res.status(500).json({ message: 'Server error', error: error.message });
+      res.status(405).end(`Method ${method} Not Allowed`);
   }
 }
