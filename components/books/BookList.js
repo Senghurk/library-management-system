@@ -1,30 +1,31 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 
 const BookList = () => {
   const [books, setBooks] = useState([]);
   const [deletePrompt, setDeletePrompt] = useState({ show: false, bookId: null, bookTitle: '' });
   const [error, setError] = useState(null);
-  const router = useRouter();
 
-  useEffect(() => {
-    fetchBooks();
-  }, []);
-
-  const fetchBooks = async () => {
+  const fetchBooks = useCallback(async () => {
+    console.log('Fetching books...');
     try {
       const response = await fetch('/api/books');
       if (!response.ok) {
         throw new Error('Failed to fetch books');
       }
       const data = await response.json();
-      setBooks(data);
+      console.log('Fetched books data:', data);
+      setBooks(data.books);
     } catch (error) {
       console.error('Error fetching books:', error);
       setError('Failed to load books. Please try again later.');
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    console.log('BookList component mounted or books dependency changed');
+    fetchBooks();
+  }, [fetchBooks]);
 
   const showDeletePrompt = (id, title) => {
     setDeletePrompt({ show: true, bookId: id, bookTitle: title });
@@ -48,7 +49,7 @@ const BookList = () => {
       const result = await response.json();
       console.log('Delete operation result:', result);
       
-      setBooks(books.filter(book => book.id.toString() !== deletePrompt.bookId.toString()));
+      setBooks(prevBooks => prevBooks.filter(book => book.id.toString() !== deletePrompt.bookId.toString()));
       hideDeletePrompt();
     } catch (error) {
       console.error('Error deleting the book:', error);
@@ -66,13 +67,13 @@ const BookList = () => {
       <ul className="mt-4">
         {books.map((book) => (
           <li key={book.id} className="border p-4 mb-2 flex justify-between items-center">
-            <span>{book.title} by {book.author || 'Unknown Author'}</span>
+            <span>{book.title} by {book.author || book.authorId || 'Unknown Author'}</span>
             <div>
               <Link href={`/books/${book.id}`} className="bg-blue-500 text-white px-2 py-1 rounded mr-2 hover:bg-blue-600">
                 View
               </Link>
               <Link href={`/books/${book.id}/edit`} className="bg-green-500 text-white px-2 py-1 rounded mr-2 hover:bg-green-600">
-                Update
+                Edit
               </Link>
               <button
                 onClick={() => showDeletePrompt(book.id, book.title)}
