@@ -26,8 +26,8 @@ const BookList = () => {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Book List</h1>
-      <Link href="/books/add">
-        <a className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add New Book</a>
+      <Link href="/books/add" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+        Add New Book
       </Link>
       <ul className="mt-4">
         {books.map((book) => (
