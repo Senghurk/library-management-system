@@ -1,1 +1,83 @@
-[]
+[
+    {
+      "id": "1",
+      "title": "To Kill a Mockingbird",
+      "authorId": "1",
+      "genreId": "1",
+      "publishedDate": "1960-07-11",
+      "summary": "A novel about the serious issues of rape and racial inequality in the American South."
+    },
+    {
+      "id": "2",
+      "title": "1984",
+      "authorId": "2",
+      "genreId": "2",
+      "publishedDate": "1949-06-08",
+      "summary": "A dystopian novel set in a totalitarian society under constant surveillance."
+    },
+    {
+      "id": "3",
+      "title": "The Great Gatsby",
+      "authorId": "3",
+      "genreId": "1",
+      "publishedDate": "1925-04-10",
+      "summary": "A critique of the American Dream through the story of Jay Gatsby."
+    },
+    {
+      "id": "4",
+      "title": "Moby Dick",
+      "authorId": "4",
+      "genreId": "3",
+      "publishedDate": "1851-10-18",
+      "summary": "The narrative of Captain Ahab's obsessive quest to kill the giant white whale, Moby Dick."
+    },
+    {
+      "id": "5",
+      "title": "Pride and Prejudice",
+      "authorId": "5",
+      "genreId": "1",
+      "publishedDate": "1813-01-28",
+      "summary": "A romantic novel that critiques the British landed gentry at the end of the 18th century."
+    },
+    {
+      "id": "6",
+      "title": "The Catcher in the Rye",
+      "authorId": "6",
+      "genreId": "2",
+      "publishedDate": "1951-07-16",
+      "summary": "A novel about the teenage angst and alienation of Holden Caulfield."
+    },
+    {
+      "id": "7",
+      "title": "Brave New World",
+      "authorId": "2",
+      "genreId": "2",
+      "publishedDate": "1932-08-31",
+      "summary": "A futuristic dystopian society characterized by technological advancements and societal conditioning."
+    },
+    {
+      "id": "8",
+      "title": "Jane Eyre",
+      "authorId": "7",
+      "genreId": "1",
+      "publishedDate": "1847-10-16",
+      "summary": "A novel about the experiences of an orphaned girl who becomes a governess and falls in love."
+    },
+    {
+      "id": "9",
+      "title": "War and Peace",
+      "authorId": "8",
+      "genreId": "4",
+      "publishedDate": "1869-03-01",
+      "summary": "A historical novel that chronicles the French invasion of Russia and its impact on Russian society."
+    },
+    {
+      "id": "10",
+      "title": "The Hobbit",
+      "authorId": "9",
+      "genreId": "3",
+      "publishedDate": "1937-09-21",
+      "summary": "A fantasy novel that follows the adventures of Bilbo Baggins, a hobbit who goes on a quest."
+    }
+  ]
+  

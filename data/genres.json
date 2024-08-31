@@ -1,1 +1,53 @@
-[]
+[
+    {
+      "id": "1",
+      "name": "Classics",
+      "description": "Timeless literature that remains relevant over time."
+    },
+    {
+      "id": "2",
+      "name": "Dystopian",
+      "description": "Fiction set in an imagined future where society is often controlled in oppressive ways."
+    },
+    {
+      "id": "3",
+      "name": "Fantasy",
+      "description": "Fiction set in a world of magic and mythical creatures."
+    },
+    {
+      "id": "4",
+      "name": "Historical",
+      "description": "Fiction set in a historical period, often featuring real historical events."
+    },
+    {
+      "id": "5",
+      "name": "Science Fiction",
+      "description": "Fiction based on futuristic or scientific advances and technologies."
+    },
+    {
+      "id": "6",
+      "name": "Mystery",
+      "description": "Fiction centered around solving a crime or uncovering secrets."
+    },
+    {
+      "id": "7",
+      "name": "Romance",
+      "description": "Fiction focused on romantic relationships between characters."
+    },
+    {
+      "id": "8",
+      "name": "Thriller",
+      "description": "Fiction designed to provoke excitement and suspense."
+    },
+    {
+      "id": "9",
+      "name": "Biography",
+      "description": "Non-fiction that explores the life of an individual."
+    },
+    {
+      "id": "10",
+      "name": "Young Adult",
+      "description": "Fiction targeted towards a teenage audience, often dealing with coming-of-age themes."
+    }
+  ]
+  
