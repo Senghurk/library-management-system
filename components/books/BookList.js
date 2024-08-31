@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useNotification } from '@/contexts/NotificationContext';
@@ -10,24 +10,26 @@ const BookList = () => {
   const router = useRouter();
   const { showNotification } = useNotification();
 
-  useEffect(() => {
-    fetchBooks();
-  }, []);
-
-  const fetchBooks = async () => {
+  const fetchBooks = useCallback(async () => {
     try {
+      setLoading(true);
       const response = await fetch('/api/books');
       if (!response.ok) {
         throw new Error('Failed to fetch books');
       }
       const data = await response.json();
       setBooks(data);
-      setLoading(false);
     } catch (err) {
       setError(err.message);
+      showNotification(err.message, 'error');
+    } finally {
       setLoading(false);
     }
-  };
+  }, [showNotification]);
+
+  useEffect(() => {
+    fetchBooks();
+  }, [fetchBooks]);
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this book?')) {
