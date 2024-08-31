@@ -1,73 +1,41 @@
-import { readFile, writeFile } from 'fs/promises';
+// pages/api/books/[id].js
+import fs from 'fs/promises';
 import path from 'path';
 
+const booksPath = path.join(process.cwd(), 'data', 'books.json');
+
 export default async function handler(req, res) {
-  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
-  res.setHeader('Surrogate-Control', 'no-store');
-
   const { id } = req.query;
-  const dataFilePath = path.join(process.cwd(), 'data', 'books.json');
-
-  console.log('API Route Handler - Method:', req.method, 'ID:', id);
 
   try {
-    const data = await readFile(dataFilePath, 'utf8');
+    const data = await fs.readFile(booksPath, 'utf8');
     let books = JSON.parse(data);
 
     if (req.method === 'GET') {
-      if (id) {
-        const book = books.find(b => b.id.toString() === id);
-        if (book) {
-          res.status(200).json({ ...book, timestamp: Date.now() });
-        } else {
-          res.status(404).json({ message: 'Book not found', timestamp: Date.now() });
-        }
+      const book = books.find(b => b.id === id);
+      if (book) {
+        res.status(200).json(book);
       } else {
-        res.status(200).json({ books, timestamp: Date.now() });
+        res.status(404).json({ message: 'Book not found' });
       }
-    } else if (req.method === 'POST') {
-      const newBook = {
-        id: (Math.max(...books.map(b => parseInt(b.id))) + 1).toString(),
-        title: req.body.title,
-        authorId: req.body.authorId,
-        genreId: req.body.genreId,
-        publishedDate: req.body.publishedDate,
-        summary: req.body.summary
-      };
-      books.push(newBook);
-      await writeFile(dataFilePath, JSON.stringify(books, null, 2));
-      res.status(201).json({ ...newBook, timestamp: Date.now() });
     } else if (req.method === 'PUT') {
-      const index = books.findIndex(b => b.id.toString() === id);
+      const index = books.findIndex(b => b.id === id);
       if (index !== -1) {
-        books[index] = { ...books[index], ...req.body, id: books[index].id };
-        await writeFile(dataFilePath, JSON.stringify(books, null, 2));
-        res.status(200).json({ ...books[index], timestamp: Date.now() });
+        books[index] = { ...books[index], ...req.body, id };
+        await fs.writeFile(booksPath, JSON.stringify(books, null, 2));
+        res.status(200).json(books[index]);
       } else {
-        res.status(404).json({ message: 'Book not found', timestamp: Date.now() });
+        res.status(404).json({ message: 'Book not found' });
       }
     } else if (req.method === 'DELETE') {
-      console.log('Attempting to delete book with ID:', id);
-      const initialLength = books.length;
-      books = books.filter(b => b.id.toString() !== id);
-      console.log('Books after filter:', books.length);
-      if (books.length < initialLength) {
-        console.log('Book found and removed, updating JSON file');
-        await writeFile(dataFilePath, JSON.stringify(books, null, 2));
-        console.log('JSON file updated successfully');
-        res.status(200).json({ message: 'Book deleted successfully', timestamp: Date.now() });
-      } else {
-        console.log('Book not found for deletion');
-        res.status(404).json({ message: 'Book not found', timestamp: Date.now() });
-      }
+      books = books.filter(b => b.id !== id);
+      await fs.writeFile(booksPath, JSON.stringify(books, null, 2));
+      res.status(204).end();
     } else {
-      res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
+      res.setHeader('Allow', ['GET', 'PUT', 'DELETE']);
       res.status(405).end(`Method ${req.method} Not Allowed`);
     }
   } catch (error) {
-    console.error('Error in book API route:', error);
-    res.status(500).json({ message: 'Internal Server Error', error: error.message, timestamp: Date.now() });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 }

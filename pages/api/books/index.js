@@ -1,24 +1,28 @@
-import { getAllBooks, addBook } from '@/lib/db';
+// pages/api/books/index.js
+import fs from 'fs/promises';
+import path from 'path';
 
-let cachedBooks = null;
-let lastFetchTime = 0;
-const CACHE_DURATION = 60000; // 1 minute in milliseconds
+const booksPath = path.join(process.cwd(), 'data', 'books.json');
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
-    const currentTime = Date.now();
-    if (!cachedBooks || currentTime - lastFetchTime > CACHE_DURATION) {
-      cachedBooks = await getAllBooks();
-      lastFetchTime = currentTime;
+    try {
+      const data = await fs.readFile(booksPath, 'utf8');
+      const books = JSON.parse(data);
+      res.status(200).json(books);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch books' });
     }
-    res.status(200).json(cachedBooks);
   } else if (req.method === 'POST') {
     try {
-      const newBook = await addBook(req.body);
-      cachedBooks = null; // Invalidate cache
+      const data = await fs.readFile(booksPath, 'utf8');
+      const books = JSON.parse(data);
+      const newBook = { ...req.body, id: Date.now().toString() };
+      books.push(newBook);
+      await fs.writeFile(booksPath, JSON.stringify(books, null, 2));
       res.status(201).json(newBook);
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      res.status(500).json({ message: 'Failed to add book' });
     }
   } else {
     res.setHeader('Allow', ['GET', 'POST']);

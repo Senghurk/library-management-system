@@ -1,19 +1,27 @@
-import { getAllAuthors, addAuthor } from '@/lib/db';
+import fs from 'fs/promises';
+import path from 'path';
+
+const authorsPath = path.join(process.cwd(), 'data', 'authors.json');
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
-      const authors = await getAllAuthors();
+      const data = await fs.readFile(authorsPath, 'utf8');
+      const authors = JSON.parse(data);
       res.status(200).json(authors);
     } catch (error) {
       res.status(500).json({ message: 'Failed to fetch authors' });
     }
   } else if (req.method === 'POST') {
     try {
-      const newAuthor = await addAuthor(req.body);
+      const data = await fs.readFile(authorsPath, 'utf8');
+      const authors = JSON.parse(data);
+      const newAuthor = { ...req.body, id: Date.now().toString() };
+      authors.push(newAuthor);
+      await fs.writeFile(authorsPath, JSON.stringify(authors, null, 2));
       res.status(201).json(newAuthor);
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      res.status(500).json({ message: 'Failed to add author' });
     }
   } else {
     res.setHeader('Allow', ['GET', 'POST']);

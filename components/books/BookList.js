@@ -1,96 +1,80 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
-import { useNotification } from '@/contexts/NotificationContext';
 
-const BookList = ({ initialBooks }) => {
-  const [books, setBooks] = useState(initialBooks || []);
-  const [loading, setLoading] = useState(!initialBooks);
-  const [error, setError] = useState(null);
-  const router = useRouter();
-  const { showNotification } = useNotification();
-
-  const fetchBooks = useCallback(async () => {
-    if (initialBooks) return;
-    try {
-      setLoading(true);
-      const response = await fetch('/api/books');
-      if (!response.ok) {
-        throw new Error('Failed to fetch books');
-      }
-      const data = await response.json();
-      setBooks(data);
-    } catch (err) {
-      setError(err.message);
-      showNotification(err.message, 'error');
-    } finally {
-      setLoading(false);
-    }
-  }, [showNotification, initialBooks]);
+const BookList = ({ initialBooks = [] }) => {
+  const [books, setBooks] = useState(initialBooks);
+  const [authors, setAuthors] = useState({});
+  const [genres, setGenres] = useState({});
+  const [isLoading, setIsLoading] = useState(!initialBooks.length);
 
   useEffect(() => {
-    fetchBooks();
-  }, [fetchBooks]);
-
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this book?')) {
-      const previousBooks = [...books];
-      setBooks(books.filter(book => book.id !== id));
-      
+    const fetchData = async () => {
       try {
-        const response = await fetch(`/api/books/${id}`, {
-          method: 'DELETE',
-        });
-        if (!response.ok) {
-          throw new Error('Failed to delete book');
+        if (!initialBooks.length) {
+          const booksRes = await fetch('/api/books');
+          const booksData = await booksRes.json();
+          setBooks(booksData);
         }
-        showNotification('Book deleted successfully', 'success');
-      } catch (err) {
-        setBooks(previousBooks);
-        showNotification(err.message, 'error');
+
+        const authorsRes = await fetch('/api/authors');
+        const genresRes = await fetch('/api/genres');
+        const authorsData = await authorsRes.json();
+        const genresData = await genresRes.json();
+        
+        const authorsMap = authorsData.reduce((acc, author) => {
+          acc[author.id] = author.name;
+          return acc;
+        }, {});
+        
+        const genresMap = genresData.reduce((acc, genre) => {
+          acc[genre.id] = genre.name;
+          return acc;
+        }, {});
+
+        setAuthors(authorsMap);
+        setGenres(genresMap);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsLoading(false);
       }
-    }
-  };
+    };
 
-  if (loading) {
-    return <div className="text-center mt-8 text-xl">Loading books...</div>;
+    fetchData();
+  }, [initialBooks]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
-  if (error) {
-    return <div className="text-center mt-8 text-xl text-red-500">Error: {error}</div>;
-  }
-
-  if (books.length === 0) {
-    return <div className="text-center mt-8 text-xl">No books found. Add some books to get started!</div>;
+  if (!books || books.length === 0) {
+    return <div>No books found.</div>;
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Book List</h1>
-      <Link href="/books/add" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Books</h2>
+      <Link href="/books/add" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">
         Add New Book
       </Link>
-      <ul className="mt-6 space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
         {books.map((book) => (
-          <li key={book.id} className="bg-white shadow-md rounded-lg p-6 flex justify-between items-center">
-            <span className="text-lg">{book.title} by {book.author || book.authorId || 'Unknown Author'}</span>
-            <div className="space-x-2">
-              <Link href={`/books/${book.id}`} className="text-blue-500 hover:text-blue-700">
+          <div key={book.id} className="bg-white shadow-md rounded-lg p-4">
+            <h3 className="text-lg font-semibold">{book.title}</h3>
+            <p className="text-sm text-gray-600">Author: {authors[book.authorId] || 'Unknown'}</p>
+            <p className="text-sm text-gray-600">Genre: {genres[book.genreId] || 'Unknown'}</p>
+            <p className="text-sm text-gray-600">Published: {new Date(book.publishedDate).toLocaleDateString()}</p>
+            <div className="mt-4">
+              <Link href={`/books/${book.id}`} className="text-indigo-600 hover:text-indigo-800 mr-2">
                 View
               </Link>
-              <Link href={`/books/${book.id}/edit`} className="text-green-500 hover:text-green-700">
+              <Link href={`/books/${book.id}/edit`} className="text-indigo-600 hover:text-indigo-800">
                 Edit
               </Link>
-              <button
-                onClick={() => handleDelete(book.id)}
-                className="text-red-500 hover:text-red-700"
-              >
-                Delete
-              </button>
             </div>
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 };

@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '@/components/Layout';
-import { getAuthorById, updateAuthor } from '@/lib/db';
 
-const EditAuthorPage = ({ initialAuthor }) => {
-  const [author, setAuthor] = useState(initialAuthor);
+const EditAuthorPage = () => {
+  const [author, setAuthor] = useState(null);
   const router = useRouter();
+  const { id } = router.query;
 
   useEffect(() => {
-    if (!initialAuthor) {
-      router.push('/authors');
+    if (id) {
+      fetch(`/api/authors/${id}`)
+        .then(response => response.json())
+        .then(data => setAuthor(data))
+        .catch(error => console.error('Failed to fetch author:', error));
     }
-  }, [initialAuthor, router]);
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,8 +24,18 @@ const EditAuthorPage = ({ initialAuthor }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await updateAuthor(author.id, author);
-      router.push('/authors');
+      const response = await fetch(`/api/authors/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(author),
+      });
+      if (response.ok) {
+        router.push('/authors');
+      } else {
+        throw new Error('Failed to update author');
+      }
     } catch (error) {
       console.error('Failed to update author:', error);
       // You might want to show an error message to the user here
@@ -30,7 +43,7 @@ const EditAuthorPage = ({ initialAuthor }) => {
   };
 
   if (!author) {
-    return <div>Loading...</div>;
+    return <Layout><div>Loading...</div></Layout>;
   }
 
   return (
@@ -93,15 +106,5 @@ const EditAuthorPage = ({ initialAuthor }) => {
     </Layout>
   );
 };
-
-export async function getServerSideProps({ params }) {
-  try {
-    const author = await getAuthorById(params.id);
-    return { props: { initialAuthor: author } };
-  } catch (error) {
-    console.error('Failed to fetch author:', error);
-    return { props: { initialAuthor: null } };
-  }
-}
 
 export default EditAuthorPage;
