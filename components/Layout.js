@@ -31,7 +31,7 @@ const Layout = ({ children }) => {
       </main>
       <footer className="bg-white shadow-md mt-8">
         <div className="container mx-auto px-6 py-3 text-center text-gray-600">
-          © 2023 Library Management System
+          © 2024 Library Management System
         </div>
       </footer>
     </div>
