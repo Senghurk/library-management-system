@@ -12,16 +12,32 @@ export default async function handler(req, res) {
     let books = JSON.parse(data);
 
     if (req.method === 'GET') {
-      const book = books.find(b => b.id === id);
-      if (book) {
-        res.status(200).json(book);
+      if (id) {
+        const book = books.find(b => b.id.toString() === id);
+        if (book) {
+          res.status(200).json(book);
+        } else {
+          res.status(404).json({ message: 'Book not found' });
+        }
       } else {
-        res.status(404).json({ message: 'Book not found' });
+        res.status(200).json(books);
       }
+    } else if (req.method === 'POST') {
+      const newBook = {
+        id: (Math.max(...books.map(b => parseInt(b.id))) + 1).toString(),
+        title: req.body.title,
+        authorId: req.body.authorId,
+        genreId: req.body.genreId,
+        publishedDate: req.body.publishedDate,
+        summary: req.body.summary
+      };
+      books.push(newBook);
+      await writeFile(dataFilePath, JSON.stringify(books, null, 2));
+      res.status(201).json(newBook);
     } else if (req.method === 'PUT') {
-      const index = books.findIndex(b => b.id === id);
+      const index = books.findIndex(b => b.id.toString() === id);
       if (index !== -1) {
-        books[index] = { ...books[index], ...req.body, id };
+        books[index] = { ...books[index], ...req.body, id: books[index].id };
         await writeFile(dataFilePath, JSON.stringify(books, null, 2));
         res.status(200).json(books[index]);
       } else {
@@ -30,7 +46,7 @@ export default async function handler(req, res) {
     } else if (req.method === 'DELETE') {
       console.log('Attempting to delete book with ID:', id);
       const initialLength = books.length;
-      books = books.filter(b => b.id !== id);
+      books = books.filter(b => b.id.toString() !== id);
       console.log('Books after filter:', books.length);
       if (books.length < initialLength) {
         console.log('Book found and removed, updating JSON file');
@@ -42,7 +58,7 @@ export default async function handler(req, res) {
         res.status(404).json({ message: 'Book not found' });
       }
     } else {
-      res.setHeader('Allow', ['GET', 'PUT', 'DELETE']);
+      res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
       res.status(405).end(`Method ${req.method} Not Allowed`);
     }
   } catch (error) {
