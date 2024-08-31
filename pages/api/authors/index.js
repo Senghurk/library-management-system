@@ -4,7 +4,16 @@ import path from 'path';
 const authorsPath = path.join(process.cwd(), 'data', 'authors.json');
 
 export default async function handler(req, res) {
-  if (req.method === 'POST') {
+  if (req.method === 'GET') {
+    try {
+      const data = await fs.readFile(authorsPath, 'utf8');
+      const authors = JSON.parse(data);
+      res.status(200).json(authors);
+    } catch (error) {
+      console.error('Error reading authors data:', error.message);
+      res.status(500).json({ message: 'Server error', error: error.message });
+    }
+  } else if (req.method === 'POST') {
     try {
       const data = await fs.readFile(authorsPath, 'utf8');
       let authors = JSON.parse(data);
@@ -13,14 +22,7 @@ export default async function handler(req, res) {
       await fs.writeFile(authorsPath, JSON.stringify(authors, null, 2));
       res.status(201).json(newAuthor);
     } catch (error) {
-      res.status(500).json({ message: 'Server error', error: error.message });
-    }
-  } else if (req.method === 'GET') {
-    try {
-      const data = await fs.readFile(authorsPath, 'utf8');
-      const authors = JSON.parse(data);
-      res.status(200).json(authors);
-    } catch (error) {
+      console.error('Error adding new author:', error.message);
       res.status(500).json({ message: 'Server error', error: error.message });
     }
   } else {
