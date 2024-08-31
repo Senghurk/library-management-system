@@ -11,10 +11,10 @@ const AuthorList = ({ initialAuthors }) => {
   const { showNotification } = useNotification();
 
   const fetchAuthors = useCallback(async () => {
-    if (initialAuthors) return;
+    if (initialAuthors) return; // Skip fetch if initialAuthors is provided
     try {
       setLoading(true);
-      const response = await fetch('/api/authors');
+      const response = await fetch('/api/authors'); // Use relative URL
       if (!response.ok) {
         throw new Error('Failed to fetch authors');
       }
@@ -36,7 +36,7 @@ const AuthorList = ({ initialAuthors }) => {
     if (window.confirm('Are you sure you want to delete this author?')) {
       const previousAuthors = [...authors];
       setAuthors(authors.filter(author => author.id !== id));
-      
+
       try {
         const response = await fetch(`/api/authors/${id}`, {
           method: 'DELETE',
