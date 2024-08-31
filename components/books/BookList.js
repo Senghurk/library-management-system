@@ -48,7 +48,7 @@ const BookList = () => {
       const result = await response.json();
       console.log('Delete operation result:', result);
       
-      setBooks(books.filter(book => book.id !== deletePrompt.bookId));
+      setBooks(books.filter(book => book.id.toString() !== deletePrompt.bookId.toString()));
       hideDeletePrompt();
     } catch (error) {
       console.error('Error deleting the book:', error);
@@ -66,7 +66,7 @@ const BookList = () => {
       <ul className="mt-4">
         {books.map((book) => (
           <li key={book.id} className="border p-4 mb-2 flex justify-between items-center">
-            <span>{book.title} by {book.author}</span>
+            <span>{book.title} by {book.author || 'Unknown Author'}</span>
             <div>
               <Link href={`/books/${book.id}`} className="bg-blue-500 text-white px-2 py-1 rounded mr-2 hover:bg-blue-600">
                 View
