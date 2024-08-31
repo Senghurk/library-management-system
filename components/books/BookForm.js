@@ -1,90 +1,99 @@
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 
-export default function BookForm({ book, onSubmit }) {
-  const [formData, setFormData] = useState(book || {
+const AddBook = () => {
+  const [book, setBook] = useState({
     title: '',
-    author: '',
-    genre: '',
-    publishedYear: '',
+    authorId: '',
+    genreId: '',
+    publishedDate: '',
     summary: ''
   });
+  const router = useRouter();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevData => ({ ...prevData, [name]: value }));
+    setBook(prevBook => ({ ...prevBook, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    const response = await fetch('/api/books', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(book),
+    });
+    if (response.ok) {
+      router.push('/books');
+    } else {
+      console.error('Failed to add book');
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div>
-        <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
-        <input
-          type="text"
-          name="title"
-          id="title"
-          value={formData.title}
-          onChange={handleChange}
-          required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-        />
-      </div>
-      <div>
-        <label htmlFor="author" className="block text-sm font-medium text-gray-700">Author</label>
-        <input
-          type="text"
-          name="author"
-          id="author"
-          value={formData.author}
-          onChange={handleChange}
-          required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-        />
-      </div>
-      <div>
-        <label htmlFor="genre" className="block text-sm font-medium text-gray-700">Genre</label>
-        <input
-          type="text"
-          name="genre"
-          id="genre"
-          value={formData.genre}
-          onChange={handleChange}
-          required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-        />
-      </div>
-      <div>
-        <label htmlFor="publishedYear" className="block text-sm font-medium text-gray-700">Published Year</label>
-        <input
-          type="number"
-          name="publishedYear"
-          id="publishedYear"
-          value={formData.publishedYear}
-          onChange={handleChange}
-          required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-        />
-      </div>
-      <div>
-        <label htmlFor="summary" className="block text-sm font-medium text-gray-700">Summary</label>
-        <textarea
-          name="summary"
-          id="summary"
-          value={formData.summary}
-          onChange={handleChange}
-          rows={3}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-        ></textarea>
-      </div>
-      <div>
-        <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-          {book ? 'Update Book' : 'Add Book'}
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Add New Book</h1>
+      <form onSubmit={handleSubmit} className="max-w-md">
+        <div className="mb-4">
+          <label className="block mb-2">Title:</label>
+          <input
+            type="text"
+            name="title"
+            value={book.title}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block mb-2">Author ID:</label>
+          <input
+            type="text"
+            name="authorId"
+            value={book.authorId}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block mb-2">Genre ID:</label>
+          <input
+            type="text"
+            name="genreId"
+            value={book.genreId}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block mb-2">Published Date:</label>
+          <input
+            type="date"
+            name="publishedDate"
+            value={book.publishedDate}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block mb-2">Summary:</label>
+          <textarea
+            name="summary"
+            value={book.summary}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+            rows="4"
+          ></textarea>
+        </div>
+        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+          Add Book
         </button>
-      </div>
-    </form>
+      </form>
+    </div>
   );
-}
+};
+
+export default AddBook;

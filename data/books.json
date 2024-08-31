@@ -1,22 +1,14 @@
 [
   {
-    "id": "1",
-    "title": "To Kill a Mockingbird",
-    "authorId": "1",
-    "genreId": "1",
-    "publishedDate": "1960-07-11",
-    "summary": "A novel about the serious issues of rape and racial inequality in the American South.",
-    "author": "test1",
-    "genre": "test1",
-    "publishedYear": "1122"
-  },
-  {
     "id": "2",
     "title": "1984",
     "authorId": "2",
     "genreId": "2",
     "publishedDate": "1949-06-08",
-    "summary": "A dystopian novel set in a totalitarian society under constant surveillance."
+    "summary": "A dystopian novel set in a totalitarian society under constant surveillance.",
+    "author": "test2",
+    "genre": "test2",
+    "publishedYear": "1234"
   },
   {
     "id": "3",
@@ -73,14 +65,6 @@
     "genreId": "4",
     "publishedDate": "1869-03-01",
     "summary": "A historical novel that chronicles the French invasion of Russia and its impact on Russian society."
-  },
-  {
-    "id": "10",
-    "title": "The Hobbit",
-    "authorId": "9",
-    "genreId": "3",
-    "publishedDate": "1937-09-21",
-    "summary": "A fantasy novel that follows the adventures of Bilbo Baggins, a hobbit who goes on a quest."
   },
   {
     "title": "test",
