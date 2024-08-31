@@ -1,25 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import Layout from '@/components/Layout';
 
-const EditAuthorPage = () => {
+const EditAuthor = () => {
   const [author, setAuthor] = useState(null);
+  const [name, setName] = useState('');
+  const [nationality, setNationality] = useState('');
+  const [birthDate, setBirthDate] = useState('');
+  const [bio, setBio] = useState('');
+  const [error, setError] = useState(null);
   const router = useRouter();
   const { id } = router.query;
 
   useEffect(() => {
-    if (id) {
-      fetch(`/api/authors/${id}`)
-        .then(response => response.json())
-        .then(data => setAuthor(data))
-        .catch(error => console.error('Failed to fetch author:', error));
-    }
-  }, [id]);
+    const fetchAuthor = async () => {
+      if (!id) return;
+      try {
+        const response = await fetch(`/api/authors/${id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch author');
+        }
+        const data = await response.json();
+        setAuthor(data);
+        setName(data.name);
+        setNationality(data.nationality);
+        setBirthDate(data.birthDate);
+        setBio(data.bio);
+      } catch (err) {
+        setError(err.message);
+      }
+    };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setAuthor(prev => ({ ...prev, [name]: value }));
-  };
+    fetchAuthor();
+  }, [id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,82 +41,57 @@ const EditAuthorPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(author),
+        body: JSON.stringify({ name, nationality, birthDate, bio }),
       });
-      if (response.ok) {
-        router.push('/authors');
-      } else {
+      if (!response.ok) {
         throw new Error('Failed to update author');
       }
-    } catch (error) {
-      console.error('Failed to update author:', error);
-      // You might want to show an error message to the user here
+      router.push(`/authors/${id}`);
+    } catch (err) {
+      setError(err.message);
     }
   };
 
-  if (!author) {
-    return <Layout><div>Loading...</div></Layout>;
-  }
+  if (!author) return <div className="text-center mt-8 text-xl">Loading author details...</div>;
 
   return (
-    <Layout>
-      <div className="max-w-2xl mx-auto mt-8">
-        <h1 className="text-2xl font-bold mb-4">Edit Author</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={author.name}
-              onChange={handleChange}
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
-          <div>
-            <label htmlFor="biography" className="block text-sm font-medium text-gray-700">Biography</label>
-            <textarea
-              id="biography"
-              name="biography"
-              value={author.biography}
-              onChange={handleChange}
-              rows="3"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            ></textarea>
-          </div>
-          <div>
-            <label htmlFor="birthDate" className="block text-sm font-medium text-gray-700">Birth Date</label>
-            <input
-              type="date"
-              id="birthDate"
-              name="birthDate"
-              value={author.birthDate}
-              onChange={handleChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
-          <div>
-            <label htmlFor="nationality" className="block text-sm font-medium text-gray-700">Nationality</label>
-            <input
-              type="text"
-              id="nationality"
-              name="nationality"
-              value={author.nationality}
-              onChange={handleChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
-          <div>
-            <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-              Update Author
-            </button>
-          </div>
-        </form>
-      </div>
-    </Layout>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-6">Edit Author</h1>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Name"
+          className="w-full p-2 border rounded"
+        />
+        <input
+          type="text"
+          value={nationality}
+          onChange={(e) => setNationality(e.target.value)}
+          placeholder="Nationality"
+          className="w-full p-2 border rounded"
+        />
+        <input
+          type="date"
+          value={birthDate}
+          onChange={(e) => setBirthDate(e.target.value)}
+          placeholder="Birth Date"
+          className="w-full p-2 border rounded"
+        />
+        <textarea
+          value={bio}
+          onChange={(e) => setBio(e.target.value)}
+          placeholder="Bio"
+          className="w-full p-2 border rounded"
+        />
+        {error && <div className="text-red-500">{error}</div>}
+        <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Update Author
+        </button>
+      </form>
+    </div>
   );
 };
 
-export default EditAuthorPage;
+export default EditAuthor;
