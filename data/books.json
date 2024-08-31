@@ -5,7 +5,10 @@
     "authorId": "1",
     "genreId": "1",
     "publishedDate": "1960-07-11",
-    "summary": "A novel about the serious issues of rape and racial inequality in the American South."
+    "summary": "A novel about the serious issues of rape and racial inequality in the American South.",
+    "author": "test",
+    "genre": "test",
+    "publishedYear": "1122"
   },
   {
     "id": "2",

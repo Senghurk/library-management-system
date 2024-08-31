@@ -18,8 +18,16 @@ const BookList = () => {
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this book?')) {
-      await fetch(`/api/books/${id}`, { method: 'DELETE' });
-      fetchBooks(); // Refresh the list after deletion
+      try {
+        const response = await fetch(`/api/books/${id}`, { method: 'DELETE' });
+        if (response.ok) {
+          setBooks(books.filter(book => book.id !== id));
+        } else {
+          console.error('Failed to delete the book');
+        }
+      } catch (error) {
+        console.error('Error deleting the book:', error);
+      }
     }
   };
 
@@ -34,8 +42,11 @@ const BookList = () => {
           <li key={book.id} className="border p-4 mb-2 flex justify-between items-center">
             <span>{book.title} by {book.author}</span>
             <div>
+              <Link href={`/books/${book.id}`} className="bg-blue-500 text-white px-2 py-1 rounded mr-2 hover:bg-blue-600">
+                View
+              </Link>
               <button
-                onClick={() => router.push(`/books/${book.id}`)}
+                onClick={() => router.push(`/books/${book.id}/edit`)}
                 className="bg-green-500 text-white px-2 py-1 rounded mr-2 hover:bg-green-600"
               >
                 Update
