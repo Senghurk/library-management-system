@@ -2,25 +2,32 @@ import { useState, useEffect } from 'react';
 import Layout from '../../components/Layout';
 import BookList from '../../components/books/BookList';
 import Link from 'next/link';
+import { useNotification } from '../../contexts/NotificationContext';
 
 export default function Books() {
   const [books, setBooks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { showNotification } = useNotification();
 
   useEffect(() => {
     async function fetchBooks() {
       try {
         const response = await fetch('/api/books');
+        if (!response.ok) {
+          throw new Error('Failed to fetch books');
+        }
         const data = await response.json();
         setBooks(data);
+        showNotification('Books loaded successfully');
       } catch (error) {
         console.error('Error fetching books:', error);
+        showNotification('Failed to load books', 'error');
       } finally {
         setIsLoading(false);
       }
     }
     fetchBooks();
-  }, []);
+  }, [showNotification]);
 
   return (
     <Layout title="Books | Library Management System">

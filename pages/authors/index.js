@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import Layout from '../../components/Layout';
 import AuthorList from '../../components/authors/AuthorList';
 import Link from 'next/link';
+import { useNotification } from '../../contexts/NotificationContext';
 
 export default function Authors() {
   const [authors, setAuthors] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { showNotification } = useNotification();
 
   useEffect(() => {
     async function fetchAuthors() {
@@ -16,8 +18,10 @@ export default function Authors() {
         }
         const data = await response.json();
         setAuthors(data);
+        showNotification('Authors loaded successfully');
       } catch (error) {
         console.error('Error fetching authors:', error);
+        showNotification('Failed to load authors', 'error');
       } finally {
         setIsLoading(false);
       }

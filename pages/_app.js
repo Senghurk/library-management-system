@@ -1,7 +1,12 @@
-import '../styles/global.css'
+import '../styles/global.css';
+import { NotificationProvider } from '../contexts/NotificationContext';
 
 function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />
+  return (
+    <NotificationProvider>
+      <Component {...pageProps} />
+    </NotificationProvider>
+  );
 }
 
-export default MyApp
+export default MyApp;
