@@ -1,5 +1,4 @@
-import '../styles/global.css';
-import { NotificationProvider } from '../contexts/NotificationContext';
+import { NotificationProvider } from '@/contexts/NotificationContext';
 
 function MyApp({ Component, pageProps }) {
   return (
