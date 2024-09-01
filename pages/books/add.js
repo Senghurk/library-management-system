@@ -76,6 +76,7 @@ const AddBook = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <br/>
       <h1 className="text-3xl font-bold mb-6">Add New Book</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
