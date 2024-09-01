@@ -5,8 +5,8 @@ import Layout from '../components/Layout';
 const HomePage = () => {
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-6">Welcome to the Library Management System</h1>
+      <div className="container mx-auto px-4 py-8"><br/><br/><br/>
+        <h1 className="text-4xl text-center font-bold mb-6">Welcome to the Library Management System</h1><br/><br/>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <Link href="/books" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center">
             Manage Books

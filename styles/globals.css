@@ -179,3 +179,25 @@ a:hover {
 .hover-scale:hover {
   transform: scale(1.05);
 }
+
+@layer base {
+  :root {
+    --color-primary: #4a90e2;
+    --color-secondary: #50c878;
+  }
+}
+
+@layer utilities {
+  .text-primary {
+    color: var(--color-primary);
+  }
+  .text-secondary {
+    color: var(--color-secondary);
+  }
+  .hover\:text-primary:hover {
+    color: var(--color-primary);
+  }
+  .hover\:text-secondary:hover {
+    color: var(--color-secondary);
+  }
+}
