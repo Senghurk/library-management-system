@@ -6,12 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "upload-data": "node upload-data.js"
   },
   "dependencies": {
     "@babel/preset-env": "^7.25.4",
     "@babel/preset-react": "^7.24.7",
     "@babel/runtime": "^7.25.6",
+    "@vercel/kv": "^2.0.0",
+    "dotenv": "^16.4.5",
     "next": "14.2.7",
     "react": "^18",
     "react-dom": "^18",

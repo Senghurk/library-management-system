@@ -6,9 +6,9 @@ export default async function handler(req, res) {
   switch (method) {
     case 'GET':
       try {
-        const books = await readData('books.json');
-        const authors = await readData('authors.json');
-        const genres = await readData('genres.json');
+        const books = await readData('books');
+        const authors = await readData('authors');
+        const genres = await readData('genres');
 
         let filteredBooks = books;
 
@@ -46,13 +46,13 @@ export default async function handler(req, res) {
 
     case 'POST':
       try {
-        const books = await readData('books.json');
+        const books = await readData('books');
         const newBook = {
           id: String(books.length + 1),
           ...req.body
         };
         books.push(newBook);
-        await writeData('books.json', books);
+        await writeData('books', books);
         res.status(201).json(newBook);
       } catch (error) {
         res.status(500).json({ message: 'Error creating new book' });
