@@ -1,5 +1,4 @@
-// pages/api/authors/[id].js
-import { readData, writeData } from '@/lib/db';
+import { readData, updateData, deleteData } from '../../../lib/db';
 
 export default async function handler(req, res) {
   const {
@@ -10,46 +9,41 @@ export default async function handler(req, res) {
   switch (method) {
     case 'GET':
       try {
-        const authors = await readData('authors');
+        const authors = await readData('authors.json');
         const author = authors.find(a => a.id === id);
         if (author) {
           res.status(200).json(author);
         } else {
-          res.status(404).json({ error: 'Author not found' });
+          res.status(404).json({ message: 'Author not found' });
         }
       } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch author' });
+        res.status(500).json({ message: 'Error reading author data' });
       }
       break;
 
     case 'PUT':
       try {
-        const authors = await readData('authors');
-        const index = authors.findIndex(a => a.id === id);
-        if (index !== -1) {
-          authors[index] = { ...authors[index], ...req.body };
-          await writeData('authors', authors);
-          res.status(200).json(authors[index]);
+        const updatedAuthor = await updateData('authors.json', id, req.body);
+        if (updatedAuthor) {
+          res.status(200).json(updatedAuthor);
         } else {
-          res.status(404).json({ error: 'Author not found' });
+          res.status(404).json({ message: 'Author not found' });
         }
       } catch (error) {
-        res.status(500).json({ error: 'Failed to update author' });
+        res.status(500).json({ message: 'Error updating author' });
       }
       break;
 
     case 'DELETE':
       try {
-        const authors = await readData('authors');
-        const filteredAuthors = authors.filter(a => a.id !== id);
-        if (authors.length !== filteredAuthors.length) {
-          await writeData('authors', filteredAuthors);
+        const deleted = await deleteData('authors.json', id);
+        if (deleted) {
           res.status(200).json({ message: 'Author deleted successfully' });
         } else {
-          res.status(404).json({ error: 'Author not found' });
+          res.status(404).json({ message: 'Author not found' });
         }
       } catch (error) {
-        res.status(500).json({ error: 'Failed to delete author' });
+        res.status(500).json({ message: 'Error deleting author' });
       }
       break;
 

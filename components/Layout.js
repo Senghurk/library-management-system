@@ -1,4 +1,3 @@
-// components/Layout.js
 import React from 'react';
 import Link from 'next/link';
 
@@ -15,9 +14,9 @@ const Layout = ({ children }) => {
                 </Link>
               </div>
               <div className="hidden md:flex items-center space-x-1">
-                <Link href="/books" className="py-4 px-2 text-gray-500 hover:text-green-500 transition duration-300">Books</Link>
-                <Link href="/authors" className="py-4 px-2 text-gray-500 hover:text-green-500 transition duration-300">Authors</Link>
-                <Link href="/genres" className="py-4 px-2 text-gray-500 hover:text-green-500 transition duration-300">Genres</Link>
+                <Link href="/books" className="py-4 px-2 text-gray-500 hover:text-blue-500 transition duration-300">Books</Link>
+                <Link href="/authors" className="py-4 px-2 text-gray-500 hover:text-blue-500 transition duration-300">Authors</Link>
+                <Link href="/genres" className="py-4 px-2 text-gray-500 hover:text-blue-500 transition duration-300">Genres</Link>
               </div>
             </div>
           </div>

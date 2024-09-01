@@ -1,12 +1,13 @@
-// contexts/NotificationContext.js
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useState, useContext } from 'react';
 
 const NotificationContext = createContext();
 
-export function NotificationProvider({ children }) {
+export const useNotification = () => useContext(NotificationContext);
+
+export const NotificationProvider = ({ children }) => {
   const [notification, setNotification] = useState(null);
 
-  const showNotification = (message, type) => {
+  const showNotification = (message, type = 'info') => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 3000);
   };
@@ -14,10 +15,13 @@ export function NotificationProvider({ children }) {
   return (
     <NotificationContext.Provider value={{ notification, showNotification }}>
       {children}
+      {notification && (
+        <div className={`fixed bottom-4 right-4 p-4 rounded-md ${
+          notification.type === 'error' ? 'bg-red-500' : 'bg-green-500'
+        } text-white`}>
+          {notification.message}
+        </div>
+      )}
     </NotificationContext.Provider>
   );
-}
-
-export function useNotification() {
-  return useContext(NotificationContext);
-}
+};

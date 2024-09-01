@@ -1,5 +1,4 @@
-// pages/api/authors/index.js
-import { readData, writeData } from '@/lib/db';
+import { readData, writeData } from '../../../lib/db';
 
 export default async function handler(req, res) {
   const { method } = req;
@@ -7,27 +6,25 @@ export default async function handler(req, res) {
   switch (method) {
     case 'GET':
       try {
-        const authors = await readData('authors');
+        const authors = await readData('authors.json');
         res.status(200).json(authors);
       } catch (error) {
-        console.error('Error fetching authors:', error);
-        res.status(500).json({ error: 'Failed to fetch authors' });
+        res.status(500).json({ message: 'Error reading authors data' });
       }
       break;
 
     case 'POST':
       try {
-        const authors = await readData('authors');
+        const authors = await readData('authors.json');
         const newAuthor = {
-          id: Date.now().toString(),
+          id: String(authors.length + 1),
           ...req.body
         };
         authors.push(newAuthor);
-        await writeData('authors', authors);
+        await writeData('authors.json', authors);
         res.status(201).json(newAuthor);
       } catch (error) {
-        console.error('Error creating author:', error);
-        res.status(500).json({ error: 'Failed to create author' });
+        res.status(500).json({ message: 'Error creating new author' });
       }
       break;
 

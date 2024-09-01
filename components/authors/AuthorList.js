@@ -1,80 +1,70 @@
-// components/authors/AuthorList.js
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Card } from '@/components/Card';
-import { useNotification } from '@/contexts/NotificationContext';
+import { useRouter } from 'next/router';
 
-export const AuthorList = () => {
+const AuthorList = () => {
   const [authors, setAuthors] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const { showNotification } = useNotification();
+  const router = useRouter();
 
   useEffect(() => {
     fetchAuthors();
   }, []);
 
   const fetchAuthors = async () => {
-    try {
-      const response = await fetch('/api/authors');
-      if (!response.ok) {
-        throw new Error(`Failed to fetch authors: ${response.statusText}`);
-      }
-      const data = await response.json();
-      setAuthors(data);
-      setLoading(false);
-    } catch (err) {
-      console.error('Error fetching authors:', err);
-      setError(err.message);
-      setLoading(false);
-      showNotification(`Error: ${err.message}`, 'error');
-    }
+    const response = await fetch('/api/authors');
+    const data = await response.json();
+    setAuthors(data);
   };
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this author?')) {
-      try {
-        const response = await fetch(`/api/authors/${id}`, {
-          method: 'DELETE',
-        });
-        if (!response.ok) {
-          throw new Error('Failed to delete author');
-        }
-        showNotification('Author deleted successfully', 'success');
-        fetchAuthors(); // Refresh the list
-      } catch (error) {
-        console.error('Error deleting author:', error);
-        showNotification(`Error: ${error.message}`, 'error');
+      const response = await fetch(`/api/authors/${id}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        fetchAuthors();
+      } else {
+        alert('Failed to delete author');
       }
     }
   };
 
-  if (loading) return <p>Loading authors...</p>;
-  if (error) return <p>Error: {error}</p>;
-
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {authors.map((author) => (
-        <Card key={author.id}>
-          <h3 className="text-xl font-bold">{author.name}</h3>
-          <p>Nationality: {author.nationality}</p>
-          <p>Birth Date: {author.birthdate}</p>
-          <div className="mt-4">
-            <Link href={`/authors/${author.id}`} className="text-blue-500 hover:underline mr-2">
-              View
-            </Link>
-            <Link href={`/authors/${author.id}/edit`} className="text-green-500 hover:underline mr-2">
-              Edit
-            </Link>
-            <button 
-              onClick={() => handleDelete(author.id)} 
-              className="text-red-500 hover:underline"
-            >
-              Delete
-            </button>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Authors</h1>
+      <Link href="/authors/add" className="bg-blue-500 text-white px-4 py-2 rounded">
+        Add New Author
+      </Link>
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {authors.map((author) => (
+          <div key={author.id} className="border p-4 rounded">
+            <h2 className="text-xl font-semibold">{author.name}</h2>
+            <p className="text-gray-600">{author.nationality}</p>
+            <div className="mt-4 flex space-x-2">
+              <button
+                onClick={() => router.push(`/authors/${author.id}`)}
+                className="bg-green-500 text-white px-2 py-1 rounded"
+              >
+                View
+              </button>
+              <button
+                onClick={() => router.push(`/authors/${author.id}/edit`)}
+                className="bg-yellow-500 text-white px-2 py-1 rounded"
+              >
+                Update
+              </button>
+              <button
+                onClick={() => handleDelete(author.id)}
+                className="bg-red-500 text-white px-2 py-1 rounded"
+              >
+                Delete
+              </button>
+            </div>
           </div>
-        </Card>
-      ))}
+        ))}
+      </div>
     </div>
   );
 };
+
+export default AuthorList;

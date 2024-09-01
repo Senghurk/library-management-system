@@ -1,118 +1,106 @@
-// pages/books/[id]/edit.js
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import Layout from '@/components/Layout';
 
-export default function EditBook() {
-  const [book, setBook] = useState({
-    title: '',
-    authorId: '',
-    genreId: '',
-    publishedDate: '',
-    summary: ''
-  });
+const EditBook = () => {
+  const [book, setBook] = useState(null);
+  const [title, setTitle] = useState('');
+  const [authorId, setAuthorId] = useState('');
+  const [genreId, setGenreId] = useState('');
+  const [publishedDate, setPublishedDate] = useState('');
+  const [summary, setSummary] = useState('');
+  const [error, setError] = useState(null);
   const router = useRouter();
   const { id } = router.query;
 
   useEffect(() => {
-    if (id) {
-      fetchBook();
-    }
+    const fetchBook = async () => {
+      if (!id) return;
+      try {
+        const response = await fetch(`/api/books/${id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch book');
+        }
+        const data = await response.json();
+        setBook(data);
+        setTitle(data.title);
+        setAuthorId(data.authorId);
+        setGenreId(data.genreId);
+        setPublishedDate(data.publishedDate);
+        setSummary(data.summary);
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+
+    fetchBook();
   }, [id]);
-
-  const fetchBook = async () => {
-    const response = await fetch(`/api/books/${id}`);
-    const data = await response.json();
-    setBook(data);
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setBook(prevBook => ({ ...prevBook, [name]: value }));
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch(`/api/books/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(book)
-    });
-    if (response.ok) {
-      router.push('/books');
+    try {
+      const response = await fetch(`/api/books/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title, authorId, genreId, publishedDate, summary }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to update book');
+      }
+      router.push(`/books/${id}`);
+    } catch (err) {
+      setError(err.message);
     }
   };
 
+  if (!book) return <div className="text-center mt-8 text-xl">Loading book details...</div>;
+
   return (
-    <Layout>
-      <div className="container mx-auto px-4">
-        <h1 className="text-2xl font-bold mb-4">Edit Book</h1>
-        <form onSubmit={handleSubmit} className="max-w-md">
-          <div className="mb-4">
-            <label htmlFor="title" className="block mb-2">Title</label>
-            <input
-              type="text"
-              id="title"
-              name="title"
-              value={book.title}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="authorId" className="block mb-2">Author ID</label>
-            <input
-              type="text"
-              id="authorId"
-              name="authorId"
-              value={book.authorId}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="genreId" className="block mb-2">Genre ID</label>
-            <input
-              type="text"
-              id="genreId"
-              name="genreId"
-              value={book.genreId}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="publishedDate" className="block mb-2">Published Date</label>
-            <input
-              type="date"
-              id="publishedDate"
-              name="publishedDate"
-              value={book.publishedDate}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="summary" className="block mb-2">Summary</label>
-            <textarea
-              id="summary"
-              name="summary"
-              value={book.summary}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
-              rows="4"
-              required
-            ></textarea>
-          </div>
-          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
-            Update Book
-          </button>
-        </form>
-      </div>
-    </Layout>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-6">Edit Book</h1>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Title"
+          className="w-full p-2 border rounded"
+        />
+        <input
+          type="text"
+          value={authorId}
+          onChange={(e) => setAuthorId(e.target.value)}
+          placeholder="Author ID"
+          className="w-full p-2 border rounded"
+        />
+        <input
+          type="text"
+          value={genreId}
+          onChange={(e) => setGenreId(e.target.value)}
+          placeholder="Genre ID"
+          className="w-full p-2 border rounded"
+        />
+        <input
+          type="date"
+          value={publishedDate}
+          onChange={(e) => setPublishedDate(e.target.value)}
+          placeholder="Published Date"
+          className="w-full p-2 border rounded"
+        />
+        <textarea
+          value={summary}
+          onChange={(e) => setSummary(e.target.value)}
+          placeholder="Summary"
+          className="w-full p-2 border rounded"
+        />
+        {error && <div className="text-red-500">{error}</div>}
+        <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Update Book
+        </button>
+      </form>
+    </div>
   );
-}
+};
+
+export default EditBook;
