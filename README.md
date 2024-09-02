@@ -34,38 +34,36 @@ The Library Management System is for WAD Project-02 Full-Stack CRUD App, a web-b
 - Genres Page
 ![Genres Page](screenshots/)
 
-## Tech Stack
-
-This project is built using modern web technologies to ensure performance, scalability, and ease of maintenance:
+### Tech Stack
 
 ### Frontend
 
-- **React.js**: A JavaScript library for building user interfaces
-- **Next.js**: A React framework for production-grade applications
-- **Tailwind CSS**: A utility-first CSS framework for rapid UI development
+- **React.js**
+- **Next.js**
+- **Tailwind CSS**
 
 ### Backend
 
-- **Next.js API Routes**: For building a serverless REST API
-- **Vercel KV**: A durable serverless Redis database for data persistence
+- **Next.js API Routes**
+- **Vercel KV**
 
 ### State Management
 
-- **React Context API**: For managing application state
+- **React Context API**
 
 ### Package Manager
 
-- **pnpm**: A fast, disk space efficient package manager
+- **pnpm**
 
 ### Deployment
 
-- **Vercel**: For deployment and hosting
+- **Vercel**
 
 ### Development Tools
 
-- **ESLint**: For identifying and reporting on patterns in JavaScript
-- **Prettier**: For code formatting
-- **PostCSS**: For transforming CSS with JavaScript
+- **ESLint**
+- **Prettier**
+- **PostCSS**
 
 ## Getting Started
 
