@@ -12,6 +12,28 @@ The Library Management System is for WAD Project-02 Full-Stack CRUD App, a web-b
 - **Search and Filter**: Easily find books, authors, or genres using search and filter functionalities.
 - **Responsive UI**: A clean and intuitive user interface that works well on various devices.
 
+## Screenshots
+
+### Home Page
+
+- Home Page
+![Home Page](screenshots/)
+
+### Books Page
+
+- Books Page
+![Books Page](screenshots/)
+
+### Authors Page
+
+- Authors Page
+![Authors Page](screenshots/)
+
+### Genres Page
+
+- Genres Page
+![Genres Page](screenshots/)
+
 ## Tech Stack
 
 This project is built using modern web technologies to ensure performance, scalability, and ease of maintenance:
