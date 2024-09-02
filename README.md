@@ -4,7 +4,7 @@
 
 The Library Management System is for WAD Project-02 Full-Stack CRUD App, a web-based application designed to efficiently manage books, authors, and genres in a library setting. This project provides a user-friendly interface for librarians or administrators to perform CRUD (Create, Read, Update, Delete) operations on books, authors, and genres.
 
-### Key Features:
+### Key Features
 
 - **Books Management**: Add, view, edit, and delete books with details such as title, author, genre, published year, and summary.
 - **Authors Management**: Maintain author information including name, biography, birthdate, and nationality.
@@ -83,4 +83,4 @@ The Library Management System is for WAD Project-02 Full-Stack CRUD App, a web-b
 
 ## License
 
-This project is open source and available under the [MIT License](LICENSE).
+This project is open source and available under the [MIT License](LICENSE)
