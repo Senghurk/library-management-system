@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import Layout from '../../components/Layout';
+import Link from 'next/link';
 
 export default function GenreDetail() {
   const router = useRouter();
@@ -10,13 +11,10 @@ export default function GenreDetail() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (router.isReady && id) {
+    if (id) {
       fetchGenre();
-    } else if (router.isReady && !id) {
-      setError('Invalid genre ID');
-      setIsLoading(false);
     }
-  }, [router.isReady, id]);
+  }, [id]);
 
   const fetchGenre = async () => {
     try {
@@ -57,18 +55,30 @@ export default function GenreDetail() {
 
   return (
     <Layout>
-      <h1 className="text-2xl font-bold mb-4">{genre.name}</h1>
-      <p>{genre.description}</p>
-      <h2 className="text-xl font-bold mt-4 mb-2">Books in this genre:</h2>
-      <ul>
-        {genre.books && genre.books.length > 0 ? (
-          genre.books.map((book) => (
-            <li key={book._id}>{book.title}</li>
-          ))
-        ) : (
-          <li>No books found in this genre.</li>
-        )}
-      </ul>
+      <div className="container mx-auto p-4">
+        <h1 className="text-2xl font-bold mb-4">{genre.name}</h1>
+        <p className="mb-4">{genre.description}</p>
+        
+        <h2 className="text-xl font-bold mt-4 mb-2">Books in this genre:</h2>
+        <ul className="list-disc pl-5 mb-4">
+          {genre.books && genre.books.length > 0 ? (
+            genre.books.map((book) => (
+              <li key={book._id}>{book.title}</li>
+            ))
+          ) : (
+            <li>No books found in this genre.</li>
+          )}
+        </ul>
+
+        <div className="flex space-x-2 mt-4">
+          <Link href="/genres" className="bg-blue-500 text-white px-4 py-2 rounded">
+            Back to Genres
+          </Link>
+          <Link href={`/genres/${genre._id}/edit`} className="bg-yellow-500 text-white px-4 py-2 rounded">
+            Edit Genre
+          </Link>
+        </div>
+      </div>
     </Layout>
   );
 }

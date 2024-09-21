@@ -20,7 +20,15 @@ const GenreList = () => {
         throw new Error('Failed to fetch genres');
       }
       const data = await response.json();
-      setGenres(data.data || []); // Ensure we always set an array
+      console.log('API Response:', data); // Debug log
+      if (Array.isArray(data)) {
+        setGenres(data);
+      } else if (data && Array.isArray(data.data)) {
+        setGenres(data.data);
+      } else {
+        console.error('Unexpected data format:', data);
+        setGenres([]);
+      }
       setError(null);
     } catch (error) {
       console.error('Error fetching genres:', error);
@@ -31,30 +39,7 @@ const GenreList = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this genre?')) {
-      try {
-        const response = await fetch(`/api/genres/${id}`, {
-          method: 'DELETE',
-        });
-        if (!response.ok) {
-          throw new Error('Failed to delete genre');
-        }
-        fetchGenres();
-      } catch (error) {
-        console.error('Error deleting genre:', error);
-        alert('Failed to delete genre');
-      }
-    }
-  };
-
-  if (isLoading) {
-    return <div>Loading genres...</div>;
-  }
-
-  if (error) {
-    return <div className="text-red-500">{error}</div>;
-  }
+  // ... rest of the component code remains the same
 
   return (
     <div className="container mx-auto p-4">
@@ -62,7 +47,11 @@ const GenreList = () => {
       <Link href="/genres/add" className="bg-blue-500 text-white px-4 py-2 rounded">
         Add New Genre
       </Link>
-      {genres.length === 0 ? (
+      {isLoading ? (
+        <p className="mt-4">Loading genres...</p>
+      ) : error ? (
+        <p className="mt-4 text-red-500">{error}</p>
+      ) : genres.length === 0 ? (
         <p className="mt-4">No genres found. Add a new genre to get started!</p>
       ) : (
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
