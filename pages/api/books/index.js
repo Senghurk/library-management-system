@@ -1,44 +1,44 @@
-import { kv } from '@vercel/kv';
+import mongoose from 'mongoose';
+import Book from '../../../models/Book'; // Import Mongoose Book model
+import Author from '../../../models/Author'; // Import Mongoose Author model
+import Genre from '../../../models/Genre'; // Import Mongoose Genre model
 
 export default async function handler(req, res) {
   const { method, query } = req;
 
+  await mongoose.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+
   switch (method) {
     case 'GET':
       try {
-        const books = await kv.get('books') || [];
-        const authors = await kv.get('authors') || [];
-        const genres = await kv.get('genres') || [];
-
-        let filteredBooks = books;
+        // Get all books and populate authorId and genreId
+        let books = await Book.find()
+          .populate('authorId')
+          .populate('genreId');
 
         // Search functionality
         if (query.search) {
           const searchTerm = query.search.toLowerCase();
-          filteredBooks = filteredBooks.filter(book => 
+          books = books.filter(book =>
             book.title.toLowerCase().includes(searchTerm) ||
-            authors.find(author => author.id === book.authorId)?.name.toLowerCase().includes(searchTerm)
+            book.authorId.name.toLowerCase().includes(searchTerm)
           );
         }
 
         // Author filter
         if (query.author) {
-          filteredBooks = filteredBooks.filter(book => book.authorId === query.author);
+          books = books.filter(book => String(book.authorId._id) === query.author);
         }
 
         // Genre filter
         if (query.genre) {
-          filteredBooks = filteredBooks.filter(book => book.genreId === query.genre);
+          books = books.filter(book => String(book.genreId._id) === query.genre);
         }
 
-        // Add author and genre names to the book objects
-        const enrichedBooks = filteredBooks.map(book => ({
-          ...book,
-          authorName: authors.find(author => author.id === book.authorId)?.name,
-          genreName: genres.find(genre => genre.id === book.genreId)?.name
-        }));
-
-        res.status(200).json(enrichedBooks);
+        res.status(200).json(books);
       } catch (error) {
         console.error('Error reading books data:', error);
         res.status(500).json({ message: 'Error reading books data' });
@@ -47,13 +47,8 @@ export default async function handler(req, res) {
 
     case 'POST':
       try {
-        const books = await kv.get('books') || [];
-        const newBook = {
-          id: String(Date.now()), // Using timestamp as ID for uniqueness
-          ...req.body
-        };
-        const updatedBooks = [...books, newBook];
-        await kv.set('books', updatedBooks);
+        const newBook = new Book(req.body); // Create new book from the request body
+        await newBook.save();
         res.status(201).json(newBook);
       } catch (error) {
         console.error('Error creating new book:', error);

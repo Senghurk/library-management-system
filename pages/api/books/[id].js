@@ -1,16 +1,19 @@
-import { kv } from '@vercel/kv';
+import mongoose from 'mongoose';
+import Book from '../../../models/Book'; // Import Mongoose Book model
 
 export default async function handler(req, res) {
-  const {
-    query: { id },
-    method,
-  } = req;
+  const { id } = req.query;
+  const { method } = req;
+
+  await mongoose.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
 
   switch (method) {
     case 'GET':
       try {
-        const books = await kv.get('books') || [];
-        const book = books.find(b => b.id === id);
+        const book = await Book.findById(id).populate('authorId').populate('genreId');
         if (book) {
           res.status(200).json(book);
         } else {
@@ -24,12 +27,9 @@ export default async function handler(req, res) {
 
     case 'PUT':
       try {
-        const books = await kv.get('books') || [];
-        const index = books.findIndex(b => b.id === id);
-        if (index !== -1) {
-          books[index] = { ...books[index], ...req.body, id };
-          await kv.set('books', books);
-          res.status(200).json(books[index]);
+        const updatedBook = await Book.findByIdAndUpdate(id, req.body, { new: true });
+        if (updatedBook) {
+          res.status(200).json(updatedBook);
         } else {
           res.status(404).json({ message: 'Book not found' });
         }
@@ -41,10 +41,8 @@ export default async function handler(req, res) {
 
     case 'DELETE':
       try {
-        const books = await kv.get('books') || [];
-        const filteredBooks = books.filter(b => b.id !== id);
-        if (books.length !== filteredBooks.length) {
-          await kv.set('books', filteredBooks);
+        const deletedBook = await Book.findByIdAndDelete(id);
+        if (deletedBook) {
           res.status(200).json({ message: 'Book deleted successfully' });
         } else {
           res.status(404).json({ message: 'Book not found' });
