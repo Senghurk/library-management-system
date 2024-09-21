@@ -1,73 +1,51 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import Layout from '../../components/Layout';
 import Link from 'next/link';
+import Layout from '../../components/Layout';
 
 export default function BookDetails() {
   const [book, setBook] = useState(null);
-  const [author, setAuthor] = useState(null);
-  const [genre, setGenre] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const router = useRouter();
   const { id } = router.query;
 
   useEffect(() => {
     if (id) {
-      async function fetchData() {
-        try {
-          const bookResponse = await fetch(`/api/books/${id}`);
-          if (!bookResponse.ok) {
-            throw new Error('Failed to fetch book');
-          }
-          const bookData = await bookResponse.json();
-          setBook(bookData);
-
-          if (!bookData.authorName && bookData.authorId) {
-            const authorResponse = await fetch(`/api/authors/${bookData.authorId}`);
-            if (authorResponse.ok) {
-              const authorData = await authorResponse.json();
-              setAuthor(authorData);
-            }
-          }
-
-          if (!bookData.genreName && bookData.genreId) {
-            const genreResponse = await fetch(`/api/genres/${bookData.genreId}`);
-            if (genreResponse.ok) {
-              const genreData = await genreResponse.json();
-              setGenre(genreData);
-            }
-          }
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        } finally {
-          setIsLoading(false);
-        }
-      }
-      fetchData();
+      fetchBook();
     }
   }, [id]);
 
-  if (isLoading) {
-    return <Layout>Loading...</Layout>;
-  }
+  const fetchBook = async () => {
+    try {
+      const response = await fetch(`/api/books/${id}`);
+      if (!response.ok) throw new Error('Failed to fetch book details');
+      const data = await response.json();
+      setBook(data.data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  if (!book) {
-    return <Layout>Book not found</Layout>;
-  }
+  if (loading) return <Layout><p>Loading book details...</p></Layout>;
+  if (error) return <Layout><p>Error: {error}</p></Layout>;
+  if (!book) return <Layout><p>Book not found</p></Layout>;
 
   return (
-    <Layout title={`${book.title} | Library Management System`}>
-      <div className="max-w-4xl mx-auto p-4">
+    <Layout>
+      <div className="container mx-auto p-4">
         <h1 className="text-3xl font-bold mb-4">{book.title}</h1>
-        <p className="text-lg mb-2"><strong>Author:</strong> {book.authorName || author?.name || 'Unknown'}</p>
-        <p className="text-lg mb-2"><strong>Genre:</strong> {book.genreName || genre?.name || 'Unknown'}</p>
-        <p className="text-lg mb-2"><strong>Published:</strong> {new Date(book.publishedDate).toLocaleDateString()}</p>
-        <p className="text-lg mb-4"><strong>Summary:</strong> {book.summary}</p>
-        <div className="flex space-x-4">
-          <Link href="/books" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <p><strong>Author:</strong> {book.authorId?.name || 'Unknown'}</p>
+        <p><strong>Genre:</strong> {book.genreId?.name || 'Unknown'}</p>
+        <p><strong>Published:</strong> {book.publishedDate ? new Date(book.publishedDate).toLocaleDateString() : 'Unknown'}</p>
+        <p><strong>Summary:</strong> {book.summary || 'No summary available'}</p>
+        <div className="mt-4">
+          <Link href="/books" className="bg-blue-500 text-white px-4 py-2 rounded mr-2">
             Back to Books
           </Link>
-          <Link href={`/books/${id}/edit`} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+          <Link href={`/books/${book._id}/edit`} className="bg-yellow-500 text-white px-4 py-2 rounded">
             Edit Book
           </Link>
         </div>

@@ -1,12 +1,15 @@
-import { kv } from '@vercel/kv';
+import dbConnect from '../../../lib/db';
+import Genre from '../../../models/Genre';
 
 export default async function handler(req, res) {
   const { method } = req;
 
+  await dbConnect();
+
   switch (method) {
     case 'GET':
       try {
-        const genres = await kv.get('genres') || [];
+        const genres = await Genre.find({});
         res.status(200).json(genres);
       } catch (error) {
         console.error('Error reading genres data:', error);
@@ -16,13 +19,7 @@ export default async function handler(req, res) {
 
     case 'POST':
       try {
-        const genres = await kv.get('genres') || [];
-        const newGenre = {
-          id: String(Date.now()), // Using timestamp as ID for uniqueness
-          ...req.body
-        };
-        const updatedGenres = [...genres, newGenre];
-        await kv.set('genres', updatedGenres);
+        const newGenre = await Genre.create(req.body);
         res.status(201).json(newGenre);
       } catch (error) {
         console.error('Error creating new genre:', error);

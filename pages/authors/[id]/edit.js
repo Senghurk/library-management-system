@@ -1,97 +1,117 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import Layout from '../../../components/Layout';
 
-const EditAuthor = () => {
-  const [author, setAuthor] = useState(null);
-  const [name, setName] = useState('');
-  const [nationality, setNationality] = useState('');
-  const [birthDate, setBirthDate] = useState('');
-  const [bio, setBio] = useState('');
+export default function EditAuthor() {
+  const [author, setAuthor] = useState({
+    name: '',
+    nationality: '',
+    birthDate: '',
+    biography: ''  // Ensure biography is included in the initial state
+  });
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const router = useRouter();
   const { id } = router.query;
 
   useEffect(() => {
-    const fetchAuthor = async () => {
-      if (!id) return;
-      try {
-        const response = await fetch(`/api/authors/${id}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch author');
-        }
-        const data = await response.json();
-        setAuthor(data);
-        setName(data.name);
-        setNationality(data.nationality);
-        setBirthDate(data.birthDate);
-        setBio(data.bio);
-      } catch (err) {
-        setError(err.message);
-      }
-    };
-
-    fetchAuthor();
+    if (id) fetchAuthor();
   }, [id]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const fetchAuthor = async () => {
     try {
-      const response = await fetch(`/api/authors/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, nationality, birthDate, bio }),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to update author');
-      }
-      router.push(`/authors/${id}`);
+      const res = await fetch(`/api/authors/${id}`);
+      if (!res.ok) throw new Error('Failed to fetch author');
+      const data = await res.json();
+      setAuthor(data.data);
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (!author) return <div className="text-center mt-8 text-xl">Loading author details...</div>;
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setAuthor(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/authors/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(author),
+      });
+      if (!res.ok) throw new Error('Failed to update author');
+      router.push(`/authors/${id}`);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) return <Layout><p>Loading...</p></Layout>;
+  if (error) return <Layout><p>Error: {error}</p></Layout>;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Edit Author</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Name"
-          className="w-full p-2 border rounded"
-        />
-        <input
-          type="text"
-          value={nationality}
-          onChange={(e) => setNationality(e.target.value)}
-          placeholder="Nationality"
-          className="w-full p-2 border rounded"
-        />
-        <input
-          type="date"
-          value={birthDate}
-          onChange={(e) => setBirthDate(e.target.value)}
-          placeholder="Birth Date"
-          className="w-full p-2 border rounded"
-        />
-        <textarea
-          value={bio}
-          onChange={(e) => setBio(e.target.value)}
-          placeholder="Bio"
-          className="w-full p-2 border rounded"
-        />
-        {error && <div className="text-red-500">{error}</div>}
-        <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Update Author
-        </button>
-      </form>
-    </div>
+    <Layout>
+      <div className="container mx-auto p-4">
+        <h1 className="text-2xl font-bold mb-4">Edit Author</h1>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="name" className="block">Name:</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={author.name}
+              onChange={handleChange}
+              className="w-full border rounded px-2 py-1"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="nationality" className="block">Nationality:</label>
+            <input
+              type="text"
+              id="nationality"
+              name="nationality"
+              value={author.nationality}
+              onChange={handleChange}
+              className="w-full border rounded px-2 py-1"
+            />
+          </div>
+          <div>
+            <label htmlFor="birthDate" className="block">Birth Date:</label>
+            <input
+              type="date"
+              id="birthDate"
+              name="birthDate"
+              value={author.birthDate ? author.birthDate.split('T')[0] : ''}
+              onChange={handleChange}
+              className="w-full border rounded px-2 py-1"
+            />
+          </div>
+          <div>
+            <label htmlFor="biography" className="block">Biography:</label>
+            <textarea
+              id="biography"
+              name="biography"
+              value={author.biography}
+              onChange={handleChange}
+              className="w-full border rounded px-2 py-1"
+              rows="4"
+            ></textarea>
+          </div>
+          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
+            Update Author
+          </button>
+        </form>
+      </div>
+    </Layout>
   );
-};
-
-export default EditAuthor;
+}

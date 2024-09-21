@@ -1,52 +1,71 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import Layout from '../../components/Layout';
 import Link from 'next/link';
+import Layout from '../../components/Layout';
 
-export default function AuthorDetails() {
+export default function AuthorDetail() {
   const [author, setAuthor] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const router = useRouter();
   const { id } = router.query;
 
   useEffect(() => {
     if (id) {
-      async function fetchAuthor() {
-        try {
-          const response = await fetch(`/api/authors/${id}`);
-          if (!response.ok) {
-            throw new Error('Failed to fetch author');
-          }
-          const data = await response.json();
-          setAuthor(data);
-        } catch (error) {
-          console.error('Error fetching author:', error);
-        } finally {
-          setIsLoading(false);
-        }
-      }
       fetchAuthor();
     }
   }, [id]);
 
-  if (isLoading) {
-    return <Layout>Loading...</Layout>;
-  }
+  const fetchAuthor = async () => {
+    try {
+      const response = await fetch(`/api/authors/${id}`);
+      if (!response.ok) throw new Error('Failed to fetch author details');
+      const data = await response.json();
+      setAuthor(data.data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  if (!author) {
-    return <Layout>Author not found</Layout>;
-  }
+  const formatDate = (dateString) => {
+    if (!dateString) return 'Unknown';
+    const date = new Date(dateString);
+    return isNaN(date.getTime()) ? 'Invalid Date' : date.toLocaleDateString();
+  };
+
+  if (loading) return <Layout><p>Loading author details...</p></Layout>;
+  if (error) return <Layout><p>Error: {error}</p></Layout>;
+  if (!author) return <Layout><p>Author not found</p></Layout>;
 
   return (
-    <Layout title={`${author.name} | Library Management System`}>
-      <div className="max-w-4xl mx-auto p-4">
-        <h1 className="text-3xl font-bold mb-4">{author.name}</h1>
-        <p className="text-lg mb-2"><strong>Nationality:</strong> {author.nationality}</p>
-        <p className="text-lg mb-2"><strong>Born:</strong> {new Date(author.birthDate).toLocaleDateString()}</p>
-        <p className="text-lg mb-4"><strong>Bio:</strong> {author.biography}</p>
-        <Link href="/authors" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Back to Authors
-        </Link>
+    <Layout>
+      <div className="container mx-auto p-4">
+        <h1 className="text-3xl font-bold mb-4">{author.name || 'Unknown Author'}</h1>
+        <p><strong>Nationality:</strong> {author.nationality || 'Unknown'}</p>
+        <p><strong>Born:</strong> {formatDate(author.birthDate)}</p>
+        <p><strong>Bio:</strong> {author.biography || 'No biography available'}</p>
+        
+        <h2 className="text-2xl font-bold mt-6 mb-2">Books by this author:</h2>
+        {author.books && author.books.length > 0 ? (
+          <ul className="list-disc list-inside mb-6">
+            {author.books.map((book, index) => (
+              <li key={index}>{book.title}</li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mb-6">No books found for this author.</p>
+        )}
+        
+        <div className="flex space-x-2">
+          <Link href="/authors" className="bg-blue-500 text-white px-4 py-2 rounded">
+            Back to Authors
+          </Link>
+          <Link href={`/authors/${author._id}/edit`} className="bg-yellow-500 text-white px-4 py-2 rounded">
+            Edit Author
+          </Link>
+        </div>
       </div>
     </Layout>
   );

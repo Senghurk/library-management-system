@@ -4,6 +4,8 @@ import { useRouter } from 'next/router';
 
 const GenreList = () => {
   const [genres, setGenres] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -11,58 +13,87 @@ const GenreList = () => {
   }, []);
 
   const fetchGenres = async () => {
-    const response = await fetch('/api/genres');
-    const data = await response.json();
-    setGenres(data);
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/genres');
+      if (!response.ok) {
+        throw new Error('Failed to fetch genres');
+      }
+      const data = await response.json();
+      setGenres(data.data || []); // Ensure we always set an array
+      setError(null);
+    } catch (error) {
+      console.error('Error fetching genres:', error);
+      setError('Failed to load genres. Please try again later.');
+      setGenres([]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this genre?')) {
-      const response = await fetch(`/api/genres/${id}`, {
-        method: 'DELETE',
-      });
-      if (response.ok) {
+      try {
+        const response = await fetch(`/api/genres/${id}`, {
+          method: 'DELETE',
+        });
+        if (!response.ok) {
+          throw new Error('Failed to delete genre');
+        }
         fetchGenres();
-      } else {
+      } catch (error) {
+        console.error('Error deleting genre:', error);
         alert('Failed to delete genre');
       }
     }
   };
 
+  if (isLoading) {
+    return <div>Loading genres...</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-500">{error}</div>;
+  }
+
   return (
-    <div className="container mx-auto p-4"><br/>
+    <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Genres</h1>
       <Link href="/genres/add" className="bg-blue-500 text-white px-4 py-2 rounded">
         Add New Genre
       </Link>
-      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {genres.map((genre) => (
-          <div key={genre.id} className="border p-4 rounded">
-            <h2 className="text-xl font-semibold">{genre.name}</h2>
-            <p className="text-gray-600">{genre.description}</p>
-            <div className="mt-4 flex space-x-2">
-              <button
-                onClick={() => router.push(`/genres/${genre.id}`)}
-                className="bg-green-500 text-white px-2 py-1 rounded"
-              >
-                View
-              </button>
-              <button
-                onClick={() => router.push(`/genres/${genre.id}/edit`)}
-                className="bg-yellow-500 text-white px-2 py-1 rounded"
-              >
-                Update
-              </button>
-              <button
-                onClick={() => handleDelete(genre.id)}
-                className="bg-red-500 text-white px-2 py-1 rounded"
-              >
-                Delete
-              </button>
+      {genres.length === 0 ? (
+        <p className="mt-4">No genres found. Add a new genre to get started!</p>
+      ) : (
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {genres.map((genre) => (
+            <div key={genre._id} className="border p-4 rounded">
+              <h2 className="text-xl font-semibold">{genre.name}</h2>
+              <p className="text-gray-600">{genre.description}</p>
+              <div className="mt-4 flex space-x-2">
+                <button
+                  onClick={() => router.push(`/genres/${genre._id}`)}
+                  className="bg-green-500 text-white px-2 py-1 rounded"
+                >
+                  View
+                </button>
+                <button
+                  onClick={() => router.push(`/genres/${genre._id}/edit`)}
+                  className="bg-yellow-500 text-white px-2 py-1 rounded"
+                >
+                  Update
+                </button>
+                <button
+                  onClick={() => handleDelete(genre._id)}
+                  className="bg-red-500 text-white px-2 py-1 rounded"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

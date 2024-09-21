@@ -1,4 +1,6 @@
-import { kv } from '@vercel/kv';
+import dbConnect from '../../../lib/db';
+import Author from '../../../models/Author';
+import Book from '../../../models/Book';
 
 export default async function handler(req, res) {
   const {
@@ -6,52 +8,46 @@ export default async function handler(req, res) {
     method,
   } = req;
 
+  await dbConnect();
+
   switch (method) {
     case 'GET':
       try {
-        const authors = await kv.get('authors') || [];
-        const author = authors.find(a => a.id === id);
-        if (author) {
-          res.status(200).json(author);
-        } else {
-          res.status(404).json({ message: 'Author not found' });
+        const author = await Author.findById(id).lean();
+        if (!author) {
+          return res.status(404).json({ success: false, message: 'Author not found' });
         }
+        const books = await Book.find({ authorId: author._id }).select('title').lean();
+        res.status(200).json({ success: true, data: { ...author, books } });
       } catch (error) {
-        console.error('Error reading author data:', error);
-        res.status(500).json({ message: 'Error reading author data' });
+        res.status(400).json({ success: false, message: error.message });
       }
       break;
 
     case 'PUT':
       try {
-        const authors = await kv.get('authors') || [];
-        const index = authors.findIndex(a => a.id === id);
-        if (index !== -1) {
-          authors[index] = { ...authors[index], ...req.body, id };
-          await kv.set('authors', authors);
-          res.status(200).json(authors[index]);
-        } else {
-          res.status(404).json({ message: 'Author not found' });
+        const author = await Author.findByIdAndUpdate(id, req.body, {
+          new: true,
+          runValidators: true,
+        });
+        if (!author) {
+          return res.status(404).json({ success: false, message: 'Author not found' });
         }
+        res.status(200).json({ success: true, data: author });
       } catch (error) {
-        console.error('Error updating author:', error);
-        res.status(500).json({ message: 'Error updating author' });
+        res.status(400).json({ success: false, message: error.message });
       }
       break;
 
     case 'DELETE':
       try {
-        const authors = await kv.get('authors') || [];
-        const filteredAuthors = authors.filter(a => a.id !== id);
-        if (authors.length !== filteredAuthors.length) {
-          await kv.set('authors', filteredAuthors);
-          res.status(200).json({ message: 'Author deleted successfully' });
-        } else {
-          res.status(404).json({ message: 'Author not found' });
+        const deletedAuthor = await Author.deleteOne({ _id: id });
+        if (!deletedAuthor) {
+          return res.status(404).json({ success: false, message: 'Author not found' });
         }
+        res.status(200).json({ success: true, data: {} });
       } catch (error) {
-        console.error('Error deleting author:', error);
-        res.status(500).json({ message: 'Error deleting author' });
+        res.status(400).json({ success: false, message: error.message });
       }
       break;
 

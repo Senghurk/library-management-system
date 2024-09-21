@@ -2,23 +2,28 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
-const BookList = () => {
-  const [books, setBooks] = useState([]);
+const BookList = ({ initialBooks = [] }) => {
+  const [books, setBooks] = useState(initialBooks);
   const [authors, setAuthors] = useState([]);
   const [genres, setGenres] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAuthor, setSelectedAuthor] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
+    if (initialBooks.length === 0) {
+      fetchBooks();
+    }
     fetchAuthors();
     fetchGenres();
   }, []);
 
   useEffect(() => {
-    fetchBooks();
+    if (searchTerm || selectedAuthor || selectedGenre) {
+      fetchBooks();
+    }
   }, [searchTerm, selectedAuthor, selectedGenre]);
 
   const fetchBooks = async () => {
@@ -32,7 +37,7 @@ const BookList = () => {
       const response = await fetch(url);
       if (!response.ok) throw new Error('Failed to fetch books');
       const data = await response.json();
-      setBooks(data);
+      setBooks(data.data || []); // Ensure we default to an empty array if data.data is undefined
     } catch (error) {
       console.error('Error fetching books:', error);
       alert('Failed to load books. Please try again.');
@@ -46,7 +51,7 @@ const BookList = () => {
       const response = await fetch('/api/authors');
       if (!response.ok) throw new Error('Failed to fetch authors');
       const data = await response.json();
-      setAuthors(data);
+      setAuthors(data.data || []); // Ensure we default to an empty array if data.data is undefined
     } catch (error) {
       console.error('Error fetching authors:', error);
       alert('Failed to load authors. Please try again.');
@@ -58,7 +63,7 @@ const BookList = () => {
       const response = await fetch('/api/genres');
       if (!response.ok) throw new Error('Failed to fetch genres');
       const data = await response.json();
-      setGenres(data);
+      setGenres(data.data || []); // Ensure we default to an empty array if data.data is undefined
     } catch (error) {
       console.error('Error fetching genres:', error);
       alert('Failed to load genres. Please try again.');
@@ -81,7 +86,7 @@ const BookList = () => {
   };
 
   return (
-    <div className="container mx-auto p-4"><br/>
+    <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Books</h1>
       <Link href="/books/add" className="bg-blue-500 text-white px-4 py-2 rounded">
         Add New Book
@@ -100,8 +105,8 @@ const BookList = () => {
           className="w-full border rounded px-2 py-1"
         >
           <option value="">All Authors</option>
-          {authors.map((author) => (
-            <option key={author.id} value={author.id}>{author.name}</option>
+          {authors && authors.length > 0 && authors.map((author) => (
+            <option key={author._id} value={author._id}>{author.name}</option>
           ))}
         </select>
         <select
@@ -110,8 +115,8 @@ const BookList = () => {
           className="w-full border rounded px-2 py-1"
         >
           <option value="">All Genres</option>
-          {genres.map((genre) => (
-            <option key={genre.id} value={genre.id}>{genre.name}</option>
+          {genres && genres.length > 0 && genres.map((genre) => (
+            <option key={genre._id} value={genre._id}>{genre.name}</option>
           ))}
         </select>
       </div>
@@ -123,26 +128,26 @@ const BookList = () => {
       ) : (
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {books.map((book) => (
-            <div key={book.id} className="border p-4 rounded">
+            <div key={book._id} className="border p-4 rounded">
               <h2 className="text-xl font-semibold">{book.title}</h2>
-              <p className="text-gray-600">Author: {book.authorName || 'Unknown'}</p>
-              <p className="text-gray-600">Genre: {book.genreName || 'Unknown'}</p>
-              <p className="text-gray-600">Published: {book.publishedDate}</p>
+              <p className="text-gray-600">Author: {book.authorId?.name || 'Unknown'}</p>
+              <p className="text-gray-600">Genre: {book.genreId?.name || 'Unknown'}</p>
+              <p className="text-gray-600">Published: {new Date(book.publishedDate).toLocaleDateString()}</p>
               <div className="mt-4 flex space-x-2">
                 <button
-                  onClick={() => router.push(`/books/${book.id}`)}
+                  onClick={() => router.push(`/books/${book._id}`)}
                   className="bg-green-500 text-white px-2 py-1 rounded"
                 >
                   View
                 </button>
                 <button
-                  onClick={() => router.push(`/books/${book.id}/edit`)}
+                  onClick={() => router.push(`/books/${book._id}/edit`)}
                   className="bg-yellow-500 text-white px-2 py-1 rounded"
                 >
                   Update
                 </button>
                 <button
-                  onClick={() => handleDelete(book.id)}
+                  onClick={() => handleDelete(book._id)}
                   className="bg-red-500 text-white px-2 py-1 rounded"
                 >
                   Delete

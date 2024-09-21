@@ -1,33 +1,53 @@
-// components/books/BookForm.js
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useNotification } from '@/contexts/NotificationContext';
 
-export const BookForm = ({ book }) => {
+const BookForm = ({ book }) => {
   const router = useRouter();
-  const { showNotification } = useNotification();
   const [formData, setFormData] = useState({
     title: '',
     authorId: '',
     genreId: '',
     publishedDate: '',
-    summary: '',
+    summary: ''
   });
+  const [authors, setAuthors] = useState([]);
+  const [genres, setGenres] = useState([]);
 
   useEffect(() => {
     if (book) {
-      setFormData(book);
+      setFormData({
+        title: book.title || '',
+        authorId: book.authorId?._id || '',
+        genreId: book.genreId?._id || '',
+        publishedDate: book.publishedDate ? new Date(book.publishedDate).toISOString().split('T')[0] : '',
+        summary: book.summary || ''
+      });
     }
+    fetchAuthorsAndGenres();
   }, [book]);
 
+  const fetchAuthorsAndGenres = async () => {
+    try {
+      const [authorsRes, genresRes] = await Promise.all([
+        fetch('/api/authors'),
+        fetch('/api/genres')
+      ]);
+      const authorsData = await authorsRes.json();
+      const genresData = await genresRes.json();
+      setAuthors(authorsData);
+      setGenres(genresData);
+    } catch (error) {
+      console.error('Error fetching authors and genres:', error);
+    }
+  };
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const url = book ? `/api/books/${book.id}` : '/api/books';
+    const url = book ? `/api/books/${book._id}` : '/api/books';
     const method = book ? 'PUT' : 'POST';
 
     try {
@@ -38,22 +58,22 @@ export const BookForm = ({ book }) => {
         },
         body: JSON.stringify(formData),
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to save book');
+      const data = await response.json();
+      if (data.success) {
+        console.log(book ? 'Book updated successfully:' : 'Book created successfully:', data.data);
+        router.push('/books');
+      } else {
+        console.error(book ? 'Failed to update book:' : 'Failed to create book:', data.message);
       }
-
-      showNotification('Book saved successfully', 'success');
-      router.push('/books');
     } catch (error) {
-      showNotification(error.message, 'error');
+      console.error(book ? 'Error updating book:' : 'Error creating book:', error);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
+        <label htmlFor="title" className="block mb-2">Title</label>
         <input
           type="text"
           id="title"
@@ -61,57 +81,69 @@ export const BookForm = ({ book }) => {
           value={formData.title}
           onChange={handleChange}
           required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          className="w-full px-3 py-2 border rounded-md"
         />
       </div>
       <div>
-        <label htmlFor="authorId" className="block text-sm font-medium text-gray-700">Author ID</label>
-        <input
-          type="text"
+        <label htmlFor="authorId" className="block mb-2">Author</label>
+        <select
           id="authorId"
           name="authorId"
           value={formData.authorId}
           onChange={handleChange}
           required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-        />
+          className="w-full px-3 py-2 border rounded-md"
+        >
+          <option value="">Select Author</option>
+          {authors.map(author => (
+            <option key={author._id} value={author._id}>{author.name}</option>
+          ))}
+        </select>
       </div>
       <div>
-        <label htmlFor="genreId" className="block text-sm font-medium text-gray-700">Genre ID</label>
-        <input
-          type="text"
+        <label htmlFor="genreId" className="block mb-2">Genre</label>
+        <select
           id="genreId"
           name="genreId"
           value={formData.genreId}
           onChange={handleChange}
           required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-        />
+          className="w-full px-3 py-2 border rounded-md"
+        >
+          <option value="">Select Genre</option>
+          {genres.map(genre => (
+            <option key={genre._id} value={genre._id}>{genre.name}</option>
+          ))}
+        </select>
       </div>
       <div>
-        <label htmlFor="publishedDate" className="block text-sm font-medium text-gray-700">Published Date</label>
+        <label htmlFor="publishedDate" className="block mb-2">Published Date</label>
         <input
           type="date"
           id="publishedDate"
           name="publishedDate"
           value={formData.publishedDate}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          required
+          className="w-full px-3 py-2 border rounded-md"
         />
       </div>
       <div>
-        <label htmlFor="summary" className="block text-sm font-medium text-gray-700">Summary</label>
+        <label htmlFor="summary" className="block mb-2">Summary</label>
         <textarea
           id="summary"
           name="summary"
           value={formData.summary}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-        ></textarea>
+          className="w-full px-3 py-2 border rounded-md"
+          rows="4"
+        />
       </div>
-      <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
         {book ? 'Update Book' : 'Add Book'}
       </button>
     </form>
   );
 };
+
+export default BookForm;

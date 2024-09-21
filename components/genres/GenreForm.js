@@ -10,18 +10,23 @@ const GenreForm = ({ genre }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const genreData = { name, description };
-    const url = genre ? `/api/genres/${genre.id}` : '/api/genres';
+    const url = genre ? `/api/genres/${genre._id}` : '/api/genres';
     const method = genre ? 'PUT' : 'POST';
 
-    const response = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(genreData),
-    });
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(genreData),
+      });
 
-    if (response.ok) {
+      if (!response.ok) {
+        throw new Error('Failed to save genre');
+      }
+
       router.push('/genres');
-    } else {
+    } catch (error) {
+      console.error('Error saving genre:', error);
       alert('Failed to save genre');
     }
   };

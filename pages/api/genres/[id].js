@@ -1,4 +1,7 @@
-import { kv } from '@vercel/kv';
+import dbConnect from '../../../lib/db';
+import Genre from '../../../models/Genre';
+import Book from '../../../models/Book';
+import { isValidObjectId } from 'mongoose';
 
 export default async function handler(req, res) {
   const {
@@ -6,52 +9,51 @@ export default async function handler(req, res) {
     method,
   } = req;
 
+  await dbConnect();
+
+  // Check if id is valid before proceeding
+  if (!id || !isValidObjectId(id)) {
+    return res.status(400).json({ success: false, message: 'Invalid genre ID' });
+  }
+
   switch (method) {
     case 'GET':
       try {
-        const genres = await kv.get('genres') || [];
-        const genre = genres.find(g => g.id === id);
-        if (genre) {
-          res.status(200).json(genre);
-        } else {
-          res.status(404).json({ message: 'Genre not found' });
+        const genre = await Genre.findById(id).lean();
+        if (!genre) {
+          return res.status(404).json({ success: false, message: 'Genre not found' });
         }
+        const books = await Book.find({ genreId: genre._id }).select('title').lean();
+        res.status(200).json({ success: true, data: { ...genre, books } });
       } catch (error) {
-        console.error('Error reading genre data:', error);
-        res.status(500).json({ message: 'Error reading genre data' });
+        res.status(400).json({ success: false, message: error.message });
       }
       break;
 
     case 'PUT':
       try {
-        const genres = await kv.get('genres') || [];
-        const index = genres.findIndex(g => g.id === id);
-        if (index !== -1) {
-          genres[index] = { ...genres[index], ...req.body, id };
-          await kv.set('genres', genres);
-          res.status(200).json(genres[index]);
-        } else {
-          res.status(404).json({ message: 'Genre not found' });
+        const genre = await Genre.findByIdAndUpdate(id, req.body, {
+          new: true,
+          runValidators: true,
+        });
+        if (!genre) {
+          return res.status(404).json({ success: false, message: 'Genre not found' });
         }
+        res.status(200).json({ success: true, data: genre });
       } catch (error) {
-        console.error('Error updating genre:', error);
-        res.status(500).json({ message: 'Error updating genre' });
+        res.status(400).json({ success: false, message: error.message });
       }
       break;
 
     case 'DELETE':
       try {
-        const genres = await kv.get('genres') || [];
-        const filteredGenres = genres.filter(g => g.id !== id);
-        if (genres.length !== filteredGenres.length) {
-          await kv.set('genres', filteredGenres);
-          res.status(200).json({ message: 'Genre deleted successfully' });
-        } else {
-          res.status(404).json({ message: 'Genre not found' });
+        const deletedGenre = await Genre.findByIdAndDelete(id);
+        if (!deletedGenre) {
+          return res.status(404).json({ success: false, message: 'Genre not found' });
         }
+        res.status(200).json({ success: true, data: {} });
       } catch (error) {
-        console.error('Error deleting genre:', error);
-        res.status(500).json({ message: 'Error deleting genre' });
+        res.status(400).json({ success: false, message: error.message });
       }
       break;
 

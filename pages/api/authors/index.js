@@ -1,32 +1,35 @@
-import { kv } from '@vercel/kv';
+import dbConnect from '../../../lib/db';
+import Author from '../../../models/Author';
+import Book from '../../../models/Book';
 
 export default async function handler(req, res) {
   const { method } = req;
 
+  await dbConnect();
+
   switch (method) {
     case 'GET':
       try {
-        const authors = await kv.get('authors') || [];
-        res.status(200).json(authors);
+        const authors = await Author.find({}).lean();
+        
+        // Fetch books for each author
+        const authorsWithBooks = await Promise.all(authors.map(async (author) => {
+          const books = await Book.find({ authorId: author._id }).select('title').lean();
+          return { ...author, books };
+        }));
+
+        res.status(200).json({ success: true, data: authorsWithBooks });
       } catch (error) {
-        console.error('Error reading authors data:', error);
-        res.status(500).json({ message: 'Error reading authors data' });
+        res.status(400).json({ success: false, message: error.message });
       }
       break;
 
     case 'POST':
       try {
-        const authors = await kv.get('authors') || [];
-        const newAuthor = {
-          id: String(Date.now()), // Using timestamp as ID for uniqueness
-          ...req.body
-        };
-        const updatedAuthors = [...authors, newAuthor];
-        await kv.set('authors', updatedAuthors);
-        res.status(201).json(newAuthor);
+        const author = await Author.create(req.body);
+        res.status(201).json({ success: true, data: author });
       } catch (error) {
-        console.error('Error creating new author:', error);
-        res.status(500).json({ message: 'Error creating new author' });
+        res.status(400).json({ success: false, message: error.message });
       }
       break;
 
