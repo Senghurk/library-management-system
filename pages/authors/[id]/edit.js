@@ -7,7 +7,7 @@ export default function EditAuthor() {
     name: '',
     nationality: '',
     birthDate: '',
-    biography: ''  // Ensure biography is included in the initial state
+    biography: ''
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -52,6 +52,10 @@ export default function EditAuthor() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCancel = () => {
+    router.push(`/authors/${id}`);
   };
 
   if (loading) return <Layout><p>Loading...</p></Layout>;
@@ -107,9 +111,14 @@ export default function EditAuthor() {
               rows="4"
             ></textarea>
           </div>
-          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
-            Update Author
-          </button>
+          <div className="flex space-x-4">
+            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+              Update Author
+            </button>
+            <button type="button" onClick={handleCancel} className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">
+              Cancel
+            </button>
+          </div>
         </form>
       </div>
     </Layout>

@@ -1,4 +1,4 @@
-import dbConnect from '../../../lib/db';
+import { dbConnect } from '../../../lib/db';
 import Book from '../../../models/Book';
 import Author from '../../../models/Author';
 import Genre from '../../../models/Genre';
@@ -7,15 +7,22 @@ import { ObjectId } from 'mongodb';
 export default async function handler(req, res) {
   const { method } = req;
 
-  await dbConnect();
+  try {
+    await dbConnect();
+  } catch (error) {
+    console.error('Database connection error:', error);
+    return res.status(500).json({ success: false, message: 'Database connection failed', error: error.message });
+  }
 
   switch (method) {
     case 'GET':
       try {
-        const books = await Book.find({}).populate('authorId').populate('genreId');
+        const books = await Book.find({}).populate('authorId').populate('genreId').lean();
+        console.log('Fetched books:', books);
         res.status(200).json({ success: true, data: books });
       } catch (error) {
-        res.status(400).json({ success: false });
+        console.error('Error fetching books:', error);
+        res.status(500).json({ success: false, message: 'Error fetching books', error: error.message });
       }
       break;
 
@@ -24,8 +31,10 @@ export default async function handler(req, res) {
         console.log('Received book data:', req.body);
         
         // Validate authorId and genreId
-        const author = await Author.findById(req.body.authorId);
-        const genre = await Genre.findById(req.body.genreId);
+        const [author, genre] = await Promise.all([
+          Author.findById(req.body.authorId),
+          Genre.findById(req.body.genreId)
+        ]);
         
         if (!author) {
           return res.status(400).json({ success: false, message: 'Invalid author ID' });

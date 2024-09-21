@@ -12,13 +12,15 @@ const BookForm = ({ book }) => {
   });
   const [authors, setAuthors] = useState([]);
   const [genres, setGenres] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (book) {
       setFormData({
         title: book.title || '',
-        authorId: book.authorId?._id || '',
-        genreId: book.genreId?._id || '',
+        authorId: book.authorId?._id || book.authorId || '',
+        genreId: book.genreId?._id || book.genreId || '',
         publishedDate: book.publishedDate ? new Date(book.publishedDate).toISOString().split('T')[0] : '',
         summary: book.summary || ''
       });
@@ -28,21 +30,44 @@ const BookForm = ({ book }) => {
 
   const fetchAuthorsAndGenres = async () => {
     try {
+      setLoading(true);
       const [authorsRes, genresRes] = await Promise.all([
         fetch('/api/authors'),
         fetch('/api/genres')
       ]);
       const authorsData = await authorsRes.json();
       const genresData = await genresRes.json();
-      setAuthors(authorsData);
-      setGenres(genresData);
+      
+      console.log('Authors data:', authorsData);
+      console.log('Genres data:', genresData);
+
+      if (authorsData.success && Array.isArray(authorsData.data)) {
+        setAuthors(authorsData.data);
+      } else {
+        console.error('Invalid authors data format:', authorsData);
+        setError('Failed to load authors. Please try again.');
+      }
+
+      if (genresData.success && Array.isArray(genresData.data)) {
+        setGenres(genresData.data);
+      } else {
+        console.error('Invalid genres data format:', genresData);
+        setError('Failed to load genres. Please try again.');
+      }
     } catch (error) {
       console.error('Error fetching authors and genres:', error);
+      setError('Failed to load authors and genres. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -64,11 +89,16 @@ const BookForm = ({ book }) => {
         router.push('/books');
       } else {
         console.error(book ? 'Failed to update book:' : 'Failed to create book:', data.message);
+        setError(data.message || 'An error occurred while saving the book.');
       }
     } catch (error) {
       console.error(book ? 'Error updating book:' : 'Error creating book:', error);
+      setError('An unexpected error occurred. Please try again.');
     }
   };
+
+  if (loading) return <div>Loading authors and genres...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">

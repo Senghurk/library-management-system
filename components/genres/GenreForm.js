@@ -1,15 +1,34 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
-const GenreForm = ({ genre }) => {
-  const [name, setName] = useState(genre?.name || '');
-  const [description, setDescription] = useState(genre?.description || '');
+const GenreForm = ({ genre, onCancel }) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    description: ''
+  });
 
   const router = useRouter();
 
+  useEffect(() => {
+    console.log("GenreForm received genre:", genre); // Debug log
+    if (genre) {
+      setFormData({
+        name: genre.name || '',
+        description: genre.description || ''
+      });
+    }
+  }, [genre]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const genreData = { name, description };
     const url = genre ? `/api/genres/${genre._id}` : '/api/genres';
     const method = genre ? 'PUT' : 'POST';
 
@@ -17,7 +36,7 @@ const GenreForm = ({ genre }) => {
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(genreData),
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
@@ -31,6 +50,8 @@ const GenreForm = ({ genre }) => {
     }
   };
 
+  console.log("Rendering GenreForm with formData:", formData); // Debug log
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
@@ -38,8 +59,9 @@ const GenreForm = ({ genre }) => {
         <input
           type="text"
           id="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
           required
           className="w-full border rounded px-2 py-1"
         />
@@ -48,15 +70,21 @@ const GenreForm = ({ genre }) => {
         <label htmlFor="description" className="block">Description:</label>
         <textarea
           id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
           className="w-full border rounded px-2 py-1"
           rows="4"
         ></textarea>
       </div>
-      <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
-        {genre ? 'Update Genre' : 'Add Genre'}
-      </button>
+      <div className="flex space-x-4">
+        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+          {genre ? 'Update Genre' : 'Add Genre'}
+        </button>
+        <button type="button" onClick={onCancel} className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">
+          Cancel
+        </button>
+      </div>
     </form>
   );
 };

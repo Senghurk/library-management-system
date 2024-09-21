@@ -14,6 +14,7 @@
     "@babel/preset-react": "^7.24.7",
     "@babel/runtime": "^7.25.6",
     "@vercel/kv": "^2.0.0",
+    "aws4": "^1.13.2",
     "dotenv": "^16.4.5",
     "lucide-react": "^0.437.0",
     "mongoose": "^8.6.3",
