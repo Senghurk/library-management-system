@@ -1,40 +1,35 @@
-import mongoose from 'mongoose';
-import Book from '../../../models/Book'; // Import Mongoose Book model
+import dbConnect from '../../../lib/db';
+import Book from '../../../models/Book';
 
 export default async function handler(req, res) {
-  const { id } = req.query;
-  const { method } = req;
+  const { query: { id }, method } = req;
 
-  await mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+  await dbConnect();
 
   switch (method) {
     case 'GET':
       try {
-        const book = await Book.findById(id).populate('authorId').populate('genreId');
-        if (book) {
-          res.status(200).json(book);
-        } else {
-          res.status(404).json({ message: 'Book not found' });
+        const book = await Book.findById(id).populate('authorId genreId');
+        if (!book) {
+          return res.status(404).json({ message: 'Book not found' });
         }
+        res.status(200).json(book);
       } catch (error) {
-        console.error('Error reading book data:', error);
-        res.status(500).json({ message: 'Error reading book data' });
+        res.status(500).json({ message: 'Error fetching book' });
       }
       break;
 
     case 'PUT':
       try {
-        const updatedBook = await Book.findByIdAndUpdate(id, req.body, { new: true });
-        if (updatedBook) {
-          res.status(200).json(updatedBook);
-        } else {
-          res.status(404).json({ message: 'Book not found' });
+        const book = await Book.findByIdAndUpdate(id, req.body, {
+          new: true,
+          runValidators: true,
+        });
+        if (!book) {
+          return res.status(404).json({ message: 'Book not found' });
         }
+        res.status(200).json(book);
       } catch (error) {
-        console.error('Error updating book:', error);
         res.status(500).json({ message: 'Error updating book' });
       }
       break;
@@ -42,13 +37,11 @@ export default async function handler(req, res) {
     case 'DELETE':
       try {
         const deletedBook = await Book.findByIdAndDelete(id);
-        if (deletedBook) {
-          res.status(200).json({ message: 'Book deleted successfully' });
-        } else {
-          res.status(404).json({ message: 'Book not found' });
+        if (!deletedBook) {
+          return res.status(404).json({ message: 'Book not found' });
         }
+        res.status(200).json({ message: 'Book deleted successfully' });
       } catch (error) {
-        console.error('Error deleting book:', error);
         res.status(500).json({ message: 'Error deleting book' });
       }
       break;
