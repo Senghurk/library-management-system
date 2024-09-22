@@ -69,11 +69,8 @@ The Library Management System is for WAD Project-02 Full-Stack CRUD App, a web-b
 
 1. Clone the repository
 2. Install dependencies with `pnpm install`
-3. Set up Vercel KV:
-   - Create a Vercel KV database in your Vercel project settings
-   - Add the necessary environment variables for Vercel KV connection
-4. Run the development server with `pnpm dev`
-5. Open [http://localhost:3000](http://localhost:3000) in your browser
+3. Run the development server with `pnpm dev`
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
 ## Contributors
 
