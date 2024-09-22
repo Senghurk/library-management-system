@@ -39,7 +39,25 @@ const GenreList = () => {
     }
   };
 
-  // ... rest of the component code remains the same
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this genre?')) {
+      try {
+        const response = await fetch(`/api/genres/${id}`, {
+          method: 'DELETE',
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to delete genre');
+        }
+
+        // Remove the deleted genre from the state
+        setGenres(genres.filter(genre => genre._id !== id));
+      } catch (error) {
+        console.error('Error deleting genre:', error);
+        setError('Failed to delete genre. Please try again later.');
+      }
+    }
+  };
 
   return (
     <div className="container mx-auto p-4">
