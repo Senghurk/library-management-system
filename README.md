@@ -6,10 +6,10 @@ The Library Management System is for WAD Project-02 Full-Stack CRUD App, a web-b
 
 ### Key Features
 
-- **Books Management**: Add, view, edit, and delete books with details such as **title**, **author**, **genre**, **published year**, and **summary**.
-- **Authors Management**: Maintain author information including **name**, **biography**, **birthdate**, and **nationality**.
+- **Books Management**: Add, view, edit, and delete books with details such as `title`, `author`, `genre`, `published year`, and `summary`.
+- **Authors Management**: Maintain author information including `name`, `biography`, `birthdate`, and `nationality`.
 - **Genres Management**: Organize and manage book genres with descriptions.
-- **Search and Filter**: Easily find books, **authors**, or **genres** using **search and filter** functionalities.
+- **Search and Filter**: Easily find books, `authors`, or `genres` using `search and filter` functionalities.
 - **Responsive UI**: A clean and intuitive user interface that works well on various devices.
 
 ## Screenshots
