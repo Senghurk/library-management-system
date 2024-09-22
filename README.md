@@ -45,7 +45,7 @@ The Library Management System is for WAD Project-02 Full-Stack CRUD App, a web-b
 ### Backend
 
 - **Next.js API Routes**
-- **Vercel KV**
+- **MongoDB**
 
 ### State Management
 
