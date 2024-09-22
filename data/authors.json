@@ -1,83 +1,72 @@
-
 [
   {
   "id": "1",
-  "title": "To Kill a Mockingbird",
-  "authorId": "1",
-  "genreId": "1",
-  "publishedDate": "1960-07-11",
-  "summary": "A novel about the serious issues of rape and racial inequality in the American South."
+  "name": "Harper Lee",
+  "biography": "An American novelist best known for 'To Kill a Mockingbird'.",
+  "birthDate": "1926-04-28",
+  "nationality": "American"
   },
   {
   "id": "2",
-  "title": "1984",
-  "authorId": "2",
-  "genreId": "2",
-  "publishedDate": "1949-06-08",
-  "summary": "A dystopian novel set in a totalitarian society under constant surveillance."
+  "name": "George Orwell",
+  "biography": "An English novelist and essayist, journalist, and critic, known for '1984' and 'Animal Farm'.",
+  "birthDate": "1903-06-25",
+  "nationality": "British"
   },
   {
   "id": "3",
-  "title": "The Great Gatsby",
-  "authorId": "3",
-  "genreId": "1",
-  "publishedDate": "1925-04-10",
-  "summary": "A critique of the American Dream through the story of Jay Gatsby."
+  "name": "F. Scott Fitzgerald",
+  "biography": "An American novelist and short story writer, famous for 'The Great Gatsby'.",
+  "birthDate": "1896-09-24",
+  "nationality": "American"
   },
   {
   "id": "4",
-  "title": "Moby Dick",
-  "authorId": "4",
-  "genreId": "3",
-  "publishedDate": "1851-10-18",
-  "summary": "The narrative of Captain Ahab's obsessive quest to kill the giant white whale, Moby Dick."
+  "name": "Herman Melville",
+  "biography": "An American novelist and poet, best known for 'Moby Dick'.",
+  "birthDate": "1819-08-01",
+  "nationality": "American"
   },
   {
   "id": "5",
-  "title": "Pride and Prejudice",
-  "authorId": "5",
-  "genreId": "1",
-  "publishedDate": "1813-01-28",
-  "summary": "A romantic novel that critiques the British landed gentry at the end of the 18th century."
+  "name": "Jane Austen",
+  "biography": "An English novelist known for her six major novels including 'Pride and Prejudice'.",
+  "birthDate": "1775-12-16",
+  "nationality": "British"
   },
   {
   "id": "6",
-  "title": "The Catcher in the Rye",
-  "authorId": "6",
-  "genreId": "2",
-  "publishedDate": "1951-07-16",
-  "summary": "A novel about the teenage angst and alienation of Holden Caulfield."
+  "name": "J.D. Salinger",
+  "biography": "An American writer known for 'The Catcher in the Rye'.",
+  "birthDate": "1919-01-01",
+  "nationality": "American"
   },
   {
   "id": "7",
-  "title": "Brave New World",
-  "authorId": "2",
-  "genreId": "2",
-  "publishedDate": "1932-08-31",
-  "summary": "A futuristic dystopian society characterized by technological advancements and societal conditioning."
+  "name": "Charlotte Brontë",
+  "biography": "An English novelist and poet, known for 'Jane Eyre'.",
+  "birthDate": "1816-04-21",
+  "nationality": "British"
   },
   {
   "id": "8",
-  "title": "Jane Eyre",
-  "authorId": "7",
-  "genreId": "1",
-  "publishedDate": "1847-10-16",
-  "summary": "A novel about the experiences of an orphaned girl who becomes a governess and falls in love."
+  "name": "Leo Tolstoy",
+  "biography": "A Russian writer, best known for 'War and Peace' and 'Anna Karenina'.",
+  "birthDate": "1828-09-09",
+  "nationality": "Russian"
   },
   {
   "id": "9",
-  "title": "War and Peace",
-  "authorId": "8",
-  "genreId": "4",
-  "publishedDate": "1869-03-01",
-  "summary": "A historical novel that chronicles the French invasion of Russia and its impact on Russian society."
+  "name": "J.R.R. Tolkien",
+  "biography": "An English writer and professor, known for 'The Hobbit' and 'The Lord of the Rings'.",
+  "birthDate": "1892-01-03",
+  "nationality": "British"
   },
   {
   "id": "10",
-  "title": "The Hobbit",
-  "authorId": "9",
-  "genreId": "3",
-  "publishedDate": "1937-09-21",
-  "summary": "A fantasy novel that follows the adventures of Bilbo Baggins, a hobbit who goes on a quest."
+  "name": "Mark Twain",
+  "biography": "An American writer and humorist, known for 'Adventures of Huckleberry Finn' and 'The Adventures of Tom Sawyer'.",
+  "birthDate": "1835-11-30",
+  "nationality": "American"
   }
 ]
