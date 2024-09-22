@@ -41,7 +41,7 @@ export default function AuthorsList() {
     }
   };
 
-  if (loading) return <Layout><p>Loading authors...</p></Layout>;
+  if (loading) return <Layout><p><br/>Loading authors...</p></Layout>;
   if (error) return <Layout><p>Error: {error}</p></Layout>;
 
   return (

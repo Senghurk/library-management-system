@@ -88,8 +88,8 @@ const BookList = () => {
 
   console.log('Filtered books:', filteredBooks);
 
-  if (loading) return <div className="text-center py-4">Loading...</div>;
-  if (error) return <div className="text-center py-4 text-red-500">Error: {error}</div>;
+  if (loading) return <div className="text-center py-4"><br/>Loading...</div>;
+  if (error) return <div className="text-center py-4 text-red-500"><br/>Error: {error}</div>;
 
   return (
     <div className="container mx-auto px-4"><br/>

@@ -26,7 +26,7 @@ export default function Books() {
     fetchBooks();
   }, []);
 
-  if (loading) return <Layout><p>Loading books...</p></Layout>;
+  if (loading) return <Layout><p><br/>Loading books...</p></Layout>;
   if (error) return <Layout><p>Error: {error}</p></Layout>;
 
   return (

@@ -25,7 +25,7 @@ export default function EditGenre() {
       }
       const data = await response.json();
       console.log("Fetched genre data:", data); // Debug log
-      setGenre(data.data); // Assuming the API returns { data: { ... } }
+      setGenre(data.data); 
     } catch (err) {
       console.error("Error fetching genre:", err);
       setError(err.message);
