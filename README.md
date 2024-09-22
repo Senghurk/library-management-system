@@ -17,22 +17,22 @@ The Library Management System is for WAD Project-02 Full-Stack CRUD App, a web-b
 ### Home Page
 
 - Home Page
-![Home Page](screenshots/)
+![Home Page](screenshots/homePage.png)
 
 ### Books Page
 
 - Books Page
-![Books Page](screenshots/)
+![Books Page](screenshots/bookPage.png)
 
 ### Authors Page
 
 - Authors Page
-![Authors Page](screenshots/)
+![Authors Page](screenshots/authorPage.png)
 
 ### Genres Page
 
 - Genres Page
-![Genres Page](screenshots/)
+![Genres Page](screenshots/genrePage.png)
 
 ### Tech Stack
 
