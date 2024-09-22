@@ -16,7 +16,6 @@ The Library Management System is for WAD Project-02 Full-Stack CRUD App, a web-b
 
 ### Home Page
 
-- Home Page
 ![Home Page](screenshots/homePage.png)
 
 ### Books Page
