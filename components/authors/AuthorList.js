@@ -35,6 +35,7 @@ const AuthorList = () => {
       <Link href="/authors/add" className="bg-blue-500 text-white px-4 py-2 rounded">
         Add New Author
       </Link>
+      
       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {authors.map((author) => (
           <div key={author.id} className="border p-4 rounded">

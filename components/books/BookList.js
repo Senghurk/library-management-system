@@ -49,7 +49,23 @@ const BookList = () => {
   }, []);
 
   const handleDelete = async (id) => {
-    // ... (keep existing code)
+    if (window.confirm('Are you sure you want to delete this book?')) {
+      try {
+        const response = await fetch(`/api/books/${id}`, {
+          method: 'DELETE',
+        });
+  
+        if (!response.ok) {
+          throw new Error('Failed to delete book');
+        }
+  
+        // Remove the deleted book from the state
+        setBooks(books.filter(book => book._id !== id));
+      } catch (err) {
+        setError('Failed to delete book. Please try again later.');
+        console.error('Error deleting book:', err);
+      }
+    }
   };
 
   const filteredBooks = books.filter(book => {
@@ -76,7 +92,7 @@ const BookList = () => {
   if (error) return <div className="text-center py-4 text-red-500">Error: {error}</div>;
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto px-4"><br/>
       <h1 className="text-3xl font-bold mb-4">Books</h1>
       <Link href="/books/add" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4 inline-block">
         Add New Book
