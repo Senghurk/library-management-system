@@ -49,6 +49,10 @@ export const AuthorForm = ({ author }) => {
     }
   };
 
+  const handleCancel = () => {
+    router.push('/authors');
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
@@ -64,14 +68,15 @@ export const AuthorForm = ({ author }) => {
         />
       </div>
       <div>
-        <label htmlFor="bio" className="block text-sm font-medium text-gray-700">Bio</label>
-        <textarea
-          id="bio"
-          name="bio"
-          value={formData.bio}
+        <label htmlFor="nationality" className="block text-sm font-medium text-gray-700">Nationality</label>
+        <input
+          type="text"
+          id="nationality"
+          name="nationality"
+          value={formData.nationality}
           onChange={handleChange}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-        ></textarea>
+        />
       </div>
       <div>
         <label htmlFor="birthdate" className="block text-sm font-medium text-gray-700">Birth Date</label>
@@ -85,19 +90,24 @@ export const AuthorForm = ({ author }) => {
         />
       </div>
       <div>
-        <label htmlFor="nationality" className="block text-sm font-medium text-gray-700">Nationality</label>
-        <input
-          type="text"
-          id="nationality"
-          name="nationality"
-          value={formData.nationality}
+        <label htmlFor="bio" className="block text-sm font-medium text-gray-700">Bio</label>
+        <textarea
+          id="bio"
+          name="bio"
+          value={formData.bio}
           onChange={handleChange}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-        />
+          rows="4"
+        ></textarea>
       </div>
-      <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-        {author ? 'Update Author' : 'Add Author'}
-      </button>
+      <div className="flex space-x-4">
+        <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          {author ? 'Update Author' : 'Add Author'}
+        </button>
+        <button type="button" onClick={handleCancel} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
+          Cancel
+        </button>
+      </div>
     </form>
   );
 };

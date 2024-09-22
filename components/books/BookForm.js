@@ -97,6 +97,10 @@ const BookForm = ({ book }) => {
     }
   };
 
+  const handleCancel = () => {
+    router.push('/books');
+  };
+
   if (loading) return <div>Loading authors and genres...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -169,9 +173,14 @@ const BookForm = ({ book }) => {
           rows="4"
         />
       </div>
-      <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
-        {book ? 'Update Book' : 'Add Book'}
-      </button>
+      <div className="flex space-x-4">
+        <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+          {book ? 'Update Book' : 'Add Book'}
+        </button>
+        <button type="button" onClick={handleCancel} className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">
+          Cancel
+        </button>
+      </div>
     </form>
   );
 };

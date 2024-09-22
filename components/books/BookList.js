@@ -34,6 +34,10 @@ const BookList = () => {
         setBooks(booksData.data || []);
         setAuthors(authorsData.data || []);
         setGenres(genresData.data || []);
+        
+        console.log('Fetched books:', booksData.data);
+        console.log('Fetched authors:', authorsData.data);
+        console.log('Fetched genres:', genresData.data);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -45,27 +49,28 @@ const BookList = () => {
   }, []);
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this book?')) {
-      try {
-        const response = await fetch(`/api/books/${id}`, { method: 'DELETE' });
-        if (!response.ok) throw new Error('Failed to delete book');
-        const data = await response.json();
-        if (data.success) {
-          setBooks(books.filter(book => book._id !== id));
-        } else {
-          throw new Error(data.message || 'Failed to delete book');
-        }
-      } catch (err) {
-        setError(err.message);
-      }
-    }
+    // ... (keep existing code)
   };
 
-  const filteredBooks = books.filter(book => 
-    (book.title.toLowerCase().includes(searchTerm.toLowerCase()) || searchTerm === '') &&
-    (!filterAuthor || book.authorId === filterAuthor) &&
-    (!filterGenre || book.genreId === filterGenre)
-  );
+  const filteredBooks = books.filter(book => {
+    console.log('Filtering book:', book);
+    console.log('Book authorId:', book.authorId);
+    console.log('Book genreId:', book.genreId);
+    console.log('Current filterAuthor:', filterAuthor);
+    console.log('Current filterGenre:', filterGenre);
+    
+    const matchesSearch = book.title.toLowerCase().includes(searchTerm.toLowerCase()) || searchTerm === '';
+    const matchesAuthor = filterAuthor === '' || book.authorId === filterAuthor || (book.authorId && book.authorId._id === filterAuthor);
+    const matchesGenre = filterGenre === '' || book.genreId === filterGenre || (book.genreId && book.genreId._id === filterGenre);
+    
+    console.log('Matches search:', matchesSearch);
+    console.log('Matches author:', matchesAuthor);
+    console.log('Matches genre:', matchesGenre);
+    
+    return matchesSearch && matchesAuthor && matchesGenre;
+  });
+
+  console.log('Filtered books:', filteredBooks);
 
   if (loading) return <div className="text-center py-4">Loading...</div>;
   if (error) return <div className="text-center py-4 text-red-500">Error: {error}</div>;
@@ -87,7 +92,10 @@ const BookList = () => {
         />
         <select
           value={filterAuthor}
-          onChange={(e) => setFilterAuthor(e.target.value)}
+          onChange={(e) => {
+            console.log('Selected author value:', e.target.value);
+            setFilterAuthor(e.target.value);
+          }}
           className="border p-2 rounded"
         >
           <option value="">All Authors</option>
@@ -98,7 +106,10 @@ const BookList = () => {
 
         <select
           value={filterGenre}
-          onChange={(e) => setFilterGenre(e.target.value)}
+          onChange={(e) => {
+            console.log('Selected genre value:', e.target.value);
+            setFilterGenre(e.target.value);
+          }}
           className="border p-2 rounded"
         >
           <option value="">All Genres</option>
