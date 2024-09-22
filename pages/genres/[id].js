@@ -55,11 +55,11 @@ export default function GenreDetail() {
 
   return (
     <Layout>
-      <div className="container mx-auto p-4">
+      <div className="container mx-auto p-4"><br/>
         <h1 className="text-2xl font-bold mb-4">{genre.name}</h1>
         <p className="mb-4">{genre.description}</p>
         
-        <h2 className="text-xl font-bold mt-4 mb-2">Books in this genre:</h2>
+        <h2 className="text-xl font-bold mt-4 mb-2">Books in this genre :</h2>
         <ul className="list-disc pl-5 mb-4">
           {genre.books && genre.books.length > 0 ? (
             genre.books.map((book) => (

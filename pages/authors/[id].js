@@ -41,13 +41,13 @@ export default function AuthorDetail() {
 
   return (
     <Layout>
-      <div className="container mx-auto p-4">
+      <div className="container mx-auto p-4"><br/>
         <h1 className="text-3xl font-bold mb-4">{author.name || 'Unknown Author'}</h1>
         <p><strong>Nationality:</strong> {author.nationality || 'Unknown'}</p>
         <p><strong>Born:</strong> {formatDate(author.birthDate)}</p>
-        <p><strong>Bio:</strong> {author.biography || 'No biography available'}</p>
+        <p><strong>Biography:</strong> {author.biography || 'No biography available'}</p>
         
-        <h2 className="text-2xl font-bold mt-6 mb-2">Books by this author:</h2>
+        <h2 className="text-2xl font-bold mt-6 mb-2">Books by this author :</h2>
         {author.books && author.books.length > 0 ? (
           <ul className="list-disc list-inside mb-6">
             {author.books.map((book, index) => (
